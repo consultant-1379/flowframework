@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>com.ericsson.component.aia.itpf.common.flow</groupId>
+		<artifactId>flowframework</artifactId>
+		<version>2.0.14-SNAPSHOT</version>
+	</parent>
+
+	<artifactId>eventflow-model</artifactId>
+	<name>Event Flow Model</name>
+
+	<description>
+		This module contains the core EModel schemata and the JAXB classes generated from them. It
+		also contains some utility classes to help with model and schema-handling.
+	</description>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<schemata.dir>${project.basedir}/src/main/resources/schemata</schemata.dir>
+		<jaxb.src.target.dir>${project.basedir}/target/main/java</jaxb.src.target.dir>
+	</properties>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20160810</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-all</artifactId>
+			<version>1.3</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+
+	<build>
+		<defaultGoal>package</defaultGoal>
+
+		<plugins>
+			<plugin>
+				<groupId>org.jvnet.jaxb2.maven2</groupId>
+				<artifactId>maven-jaxb2-plugin</artifactId>
+				<version>0.8.2</version>
+				<configuration>
+				</configuration>
+				<executions>
+					<execution>
+						<id>jaxb_oss_schemata</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>${schemata.dir}</schemaDirectory>
+							<generateDirectory>${jaxb.src.target.dir}</generateDirectory>
+							<extension>true</extension>
+							<forceRegenerate>true</forceRegenerate>
+							<specVersion>2.2</specVersion>
+							<verbose>true</verbose>
+							<episode>true</episode>
+						</configuration>
+					</execution>
+
+					<execution>
+						<id>xacml</id>
+						<goals>
+							<goal>generate</goal>
+						</goals>
+						<configuration>
+							<schemaDirectory>${schemata.dir}/xacml</schemaDirectory>
+							<generateDirectory>${jaxb.src.target.dir}</generateDirectory>
+							<extension>true</extension>
+							<forceRegenerate>true</forceRegenerate>
+							<specVersion>2.2</specVersion>
+							<verbose>true</verbose>
+							<episode>false</episode>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
+
+</project>

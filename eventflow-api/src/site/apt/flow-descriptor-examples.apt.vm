@@ -1,0 +1,349 @@
+	------
+	Flow Framework - Flow Descriptor Examples
+	------
+	
+Flow Descriptor Examples
+
+	Basic description is available in {{{./flow-descriptor.html}flow descriptor section}}.
+		
+	* {{Event flow with single path}}
+	
+	* {{Event flow with multiple paths in sequence}}
+	
+	* {{Event flow with multiple paths in parallel}}
+
+	* {{Event flow with one input adapter and multiple output adapters}}
+	
+	* {{Event flow using Named event handlers}}
+	
+	[]
+
+* {Event flow with single path}
+
+	This example shows an event flow that uses Java event handlers only. 
+	
+	This example which receives events from HazelCast process them using Java event handler and sends them to another Hazelcast topic.
+
++-------------------------------+
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+    xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    oc:ns="com.test1" oc:name="testFlow1_bytes" oc:version="1.1.0">
+    <oc:modelCreationInfo author="author"
+        creationDate="today">
+        <oc:designedModel componentId="someComponentId" />
+    </oc:modelCreationInfo>
+     
+    <oc:desc>Example flows</oc:desc>
+     
+    <input name="hcInput">
+        <attribute name="uri" value="hazelcast:/" />
+        <attribute name="channelName" value="test-topic11" />
+    </input>
+     
+     <step name="processor">
+        <handler>
+            <className>com.ericsson.oss.MyCustomJavaProcessor</className>
+        </handler>
+    </step>
+ 
+    <output name="hcOutput">
+        <attribute name="uri" value="hazelcast:/" />
+        <attribute name="channelName" value="test-topic22" />
+    </output>
+    <path>
+        <from uri="hcInput" />
+        <to uri="processor" />
+        <to uri="hcOutput" />
+    </path>
+</FlowDefinition>
++-------------------------------+
+
+
+* {Event flow with multiple paths in sequence}
+
+	This example shows an event flow which connects two paths in sequence. The events output by the first path is sent downstream to the second path.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInSequence" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multiPathsInSequence" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Flow Test - Multiple paths: one path feeds another path</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic-in" />
+	</input>
+	
+	<output name="hcOutput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic-out" />
+	</output>
+	
+	<step name="threading">
+		<handler>
+			<className>com.ericsson.oss.services.test.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="duplicator">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="6" />
+	</step>
+
+	<!-- path 1 -->
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading" />
+		<to uri="duplicator" />
+	</path>
+	
+	<!-- The first step of path 2 uses the same component as the last step of path 1 (both duplicator). 
+	It will connect these 2 paths in sequence, which means the events output by path 1 will be sent to path 2 -->
+	<!-- path 2 -->
+	<path>
+		<from uri="duplicator" />
+		<to uri="hcOutput" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+* {Event flow with multiple paths in parallel}
+
+	This example shows an event flow which has two paths working in parallel. 
+	Each event flow uses its own input adapter, output adapter and event handlers without influence on each other.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multiPathsInParallel" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multiPathsInParallel" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Test Flow - Multiple paths and multiple IOs</oc:desc>
+
+	<input name="hcInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic1-in" />
+	</input>
+	
+	<input name="hcInput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic2-in" />
+	</input>
+
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic1-out" />
+	</output>
+	
+	<output name="hcOutput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.oss.services.test.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="threading2">
+		<handler>
+			<className>com.ericsson.oss.services.test.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="duplicator2">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<!-- These two paths below works in parallel -->
+	<!-- The first path has its own input adapter (hcInput1 - receiving events on channel test-topic-in), output adapter (hcOutput1 - receiving events on channel test-topic1-out) 
+	and event handlers (threading1, duplicator1) -->
+	<path>
+		<from uri="hcInput1" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutput1" />
+	</path>
+	
+	<!-- The second path has its own input adapter (hcInput2 - receiving events on channel test-topic2-in), output adapter (hcOutput2 -  receiving events on channel test-topic2-out) and event handlers (threading2, duplicator2) -->
+	<path>
+		<from uri="hcInput2" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutput2" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+
+
+* {Event flow with one input adapter and multiple output adapters}
+
+	This example shows an event flow which receives events from one source and send them to multiple destinations. 
+	It uses one input adapter and two output adapters defined in two paths.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test" oc:name="multicasting" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="author" creationDate="today">
+		<oc:designedModel componentId="multicasting" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Test - One Input Adapter which feeds multiple Paths</oc:desc>
+
+	<input name="hcInput">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic-in" />
+	</input>
+	
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic1-out" />
+	</output>
+	
+	<output name="hcOutput2">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic2-out" />
+	</output>
+	
+	<step name="threading1">
+		<handler>
+			<className>com.ericsson.oss.services.test.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+	
+	<step name="threading2">
+		<handler>
+			<className>com.ericsson.oss.services.test.builtin.components.ThreadManagementComponent</className>
+		</handler>
+		<attribute name="threadPoolSize" value="10" />
+		<attribute name="threadPriority" value="9" />
+	</step>
+
+	<step name="duplicator1">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="3" />
+	</step>
+
+	<step name="duplicator2">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.flow.components.JeeTestEventDuplicatorComponent</className>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<!-- These 2 paths below uses the same input adapters (hcInput), and each path uses its own output adapter (hcOutput1, hcOutput2).
+	Events received by hcInput will be sent to both paths for processing and finally output via both hcOutput1 and hcOutput2 -->
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading1" />
+		<to uri="duplicator1" />
+		<to uri="hcOutput1" />
+	</path>
+	
+	<path>
+		<from uri="hcInput" />
+		<to uri="threading2" />
+		<to uri="duplicator2" />
+		<to uri="hcOutput2" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+
+* {Event flow using Named event handlers}
+
+	Named handler is flow engine specific. The following EPS Flow example shows an event flow that uses Named event handlers.
+
++-------------------------------+
+<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+	xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	oc:ns="com.test.cdi" oc:name="testCDIFlow" oc:version="1.1.0">
+
+	<oc:modelCreationInfo author="author"
+		creationDate="today">
+		<oc:designedModel componentId="someComponentId" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>example flows</oc:desc>
+
+	<input name="hcInput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic1" />
+	</input>
+
+	<output name="hcOutput1">
+		<attribute name="uri" value="hazelcast:/" />
+		<attribute name="channelName" value="test-topic2" />
+	</output>
+
+	<!-- This is a CDI event handler -->
+	<step name="cdiEventGenerator">
+		<handler>
+			<named>cdiEventGenerator</named>
+		</handler>
+		<attribute name="count" value="2" />
+	</step>
+
+	<!-- This is a normal Java event handler -->
+	<step name="testPassThroughComponent">
+		<handler>
+			<className>com.ericsson.oss.services.test.core.integration.jee.cdi.TestPassThroughEventHandler</className>
+		</handler>
+	</step>
+
+	<!-- This is a CDI event handler -->
+	<step name="cdiEventHandler">
+		<handler>
+			<named>cdiEventDuplicator</named>
+		</handler>
+		<attribute name="duplicationCount" value="5" />
+	</step>
+
+	<path>
+		<from uri="hcInput1" />
+		<to uri="cdiEventGenerator" />
+		<to uri="testPassThroughComponent" />
+		<to uri="cdiEventHandler" />
+		<to uri="hcOutput1" />
+	</path>
+
+</FlowDefinition>
++-------------------------------+
+

@@ -1,0 +1,1204 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- ****************************************************************************************************************** 
+	COPYRIGHT Ericsson 2013 The copyright to the computer program(s) herein is 
+	the property of Ericsson Inc. The programs may be used and/or copied only 
+	with written permission from Ericsson Inc. or in accordance with the terms 
+	and conditions stipulated in the agreement/contract under which the program(s) 
+	have been supplied. ******************************** Important note on backwards-compatibility 
+	******************************************** This XSD must *always* evolve 
+	in a backwards-compatible fashion. Backwards-compatibility is defined as 
+	the possibility to correctly parse any XML file, adhering to a previous version 
+	of this XSD, with the updated version of the XSD. This implies that existing 
+	elements and attributes of this XSD must not be removed; and likewise that 
+	any new elements and attributes are made optional. Any change to this XSD 
+	must be *explicitly* signed off and reviewed by the appropriate OSS approval 
+	body. Under no circumstances must this XSD be modified without having undergone 
+	a defined review-process. --><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:flow="urn:com:ericsson:schema:xml:oss:fbp_flow" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:oss_common="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" elementFormDefault="qualified" jxb:extensionBindingPrefixes="xjc" jxb:version="2.0" targetNamespace="urn:com:ericsson:schema:xml:oss:fbp_flow" version="2.0">
+
+	<include schemaLocation=""/>
+	<annotation>
+		<documentation>The Flow Based Processing (aia) 'flow' schema defines
+			'FlowDefinition'
+			and also contains commonly used constructs used by
+			the aia 'flow' schema and other aia schemata.
+		</documentation>
+	</annotation>
+	<annotation>
+		<documentation>This is the JAXB binding information for
+			code-generation by the xjc tool.
+		</documentation>
+		<appinfo>
+			<jxb:schemaBindings xmlns:eps_flows="urn:com:ericsson:schema:xml:oss:fbp_flow">
+				<jxb:package name="com.ericsson.component.aia.itpf.common.modeling.flow.schema.gen.fbp_flow"/>
+			</jxb:schemaBindings>
+		</appinfo>
+	</annotation>
+
+	<import namespace="urn:com:ericsson:schema:xml:oss:oss_common" schemaLocation="oss_common.xsd"/>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		FlowDefinition +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<element name="FlowDefinition">
+		<annotation>
+			<documentation>Models the definition of an event processing flow. A
+				flow is a sequence of
+				event processing steps. The sequence can have
+				one or more inputs and one
+				or more outputs.
+
+				Configuration and
+				invocation attributes can be defined for the flow.
+				These
+				definitions
+				essentially constitute a domain-specific-langauge (DSL)
+				for
+				event
+				processing flows. The DSL can have multiple
+				implementations. These
+				implementations
+				are referred to as 'engines'
+				('flow-engines' to be
+				more specific).
+
+				Flow models do not support inheritance.
+			</documentation>
+		</annotation>
+		<complexType>
+			<complexContent>
+				<extension base="oss_common:eModelDefinition">
+					<sequence>
+						<element maxOccurs="unbounded" minOccurs="0" name="attribute" type="flow:attributeValueType">
+							<annotation>
+								<documentation>Configuration attributes and values which apply
+									to the entire flow definition. These attributes are visible to
+									inputs, outputs and steps.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="invocationAttribute" type="flow:attributeValueType">
+							<annotation>
+								<documentation>Invocation attributes and values which apply to
+									the entire flow definition. These are visible to inputs,
+									outputs and steps.
+									They override input invocation
+									attribute
+									values specified for handlers.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="attributeGroup" type="flow:attributeGroupType">
+							<annotation>
+								<documentation>Attribute Groups are used to define attribute
+									values once, and to re-use
+									them multiple times in other places,
+									such as steps and
+									inputs/outputs.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="input" type="flow:inputType">
+							<annotation>
+								<documentation>
+									An explicit input to the flow. Flows
+									may also have
+									implicit inputs which
+									are defined by the contents of
+									'from' uri
+									values. It is recommended
+									that a flow should use
+									explicitly-defined inputs. It is
+									also recommended that if a flow
+									uses
+									implicitly-defined inputs then it
+									should not also use
+									explicitly-defined inputs, ie.
+									should not be mixed.
+
+									An adapter
+									may optionally be defined
+									for the input. The adapter can be
+									defined inline or as a modelled
+									adapter referenced. Adapter
+									attribute values can be supplied,
+									which override attribute
+									default
+									values defined at adapter level.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="output" type="flow:outputType">
+							<annotation>
+								<documentation>
+									An explicit output from the flow.
+									Flows may also
+									have implicit outputs
+									which are defined by the contents of
+									'to'
+									uri values. It is recommended
+									that a flow should use
+									explicitly-defined outputs. It is
+									also recommended that if a
+									flow uses
+									implicitly-defined outputs then it
+									should not also use
+									explicitly-defined outputs, ie.
+									should not be mixed.
+
+									An adapter
+									may optionally be defined
+									for the output. The adapter can be
+									defined inline or as a modelled
+									adapter referenced. Adapter
+									attribute values can be supplied,
+									which override attribute
+									default
+									values defined at adapter level.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="step" type="flow:stepType">
+							<annotation>
+								<documentation>A step in the flow. A step is a processing stage
+									implemented by a 'handler' and referenced by 'paths'.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="clonedStep" type="flow:clonedStepType">
+							<annotation>
+								<documentation>A cloned step in the flow that has the same
+									configuration as another step.
+									It may be referenced by 'paths'.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="1" name="path" type="flow:pathType">
+							<annotation>
+								<documentation>A path is a segment of a flow.
+								</documentation>
+							</annotation>
+						</element>
+						<element maxOccurs="unbounded" minOccurs="0" name="capabilities" type="flow:capabilitiesType">
+							<annotation>
+								<documentation>The capabilities required by this flow, for
+									example, CORBA, FTP etc.
+								</documentation>
+							</annotation>
+						</element>
+					</sequence>
+					<attribute name="engineFamilyUri" type="oss_common:uriType" use="optional">
+						<annotation>
+							<documentation>A reference to the type of flow engine in which
+								the flow can be deployed.
+								Ideally the flow could be deployed to
+								any type of flow engine, but in
+								some cases this
+								will not be
+								possible, and in these cases this attribute should be
+								used.
+								Multiple values can be supplied using comma-separation.
+							</documentation>
+						</annotation>
+					</attribute>
+					<attribute default="ASYNCHRONOUS" name="synchronicity" type="flow:synchronicityType" use="optional">
+						<annotation>
+							<documentation>Indication of whether the flow is SYNCHRONOUS or
+								ASYNCHRONOUS. The default is ASYNCHRONOUS.
+							</documentation>
+						</annotation>
+					</attribute>
+					<attribute name="errorFlowUri" type="oss_common:uriType" use="optional">
+						<annotation>
+							<documentation>Reference to a flow to which errors should be
+								sent.
+							</documentation>
+						</annotation>
+					</attribute>
+				</extension>
+			</complexContent>
+		</complexType>
+	</element>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Input/output Types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<complexType name="outputType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="attribute" type="flow:attributeValueType"/>
+			<element maxOccurs="1" minOccurs="0" name="sinks" type="flow:SinksType">
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="attributeGroupRef" type="flow:attributeGroupRefType">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"/>
+	</complexType>
+
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Adapter types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<element name="adapter" type="flow:adapterType"/>	<!-- Used by both inline and modelled adapters -->
+
+	<complexType name="adapterType">
+		<annotation>
+			<documentation>An adapter is a component which is
+				used as an ingress
+				or egress
+				of a flow. The class or bean name which
+				implements the
+				adapter must be specified.
+
+				A reference to a modeled
+				channel can be
+				supplied which defines the
+				event channel
+				the adapter should use to
+				send or receive events.
+				References to
+				modeled event types which the
+				adapter expects to send
+				or receive
+				can be listed.
+			</documentation>
+		</annotation>
+		<sequence>
+			<choice maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>An adapter is always backed by a Java class. The
+						java class can be explicitly
+						specified, or its CDI name can be
+						specified.
+					</documentation>
+				</annotation>
+				<element maxOccurs="1" minOccurs="1" name="className" type="oss_common:javaClassNameType">
+					<annotation>
+						<documentation>The full Java class name implementing this adapter.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" name="named" type="oss_common:nameInformationType">
+					<annotation>
+						<documentation>The name of the bean (@Named) implementing this
+							adapter.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+			<element maxOccurs="1" minOccurs="0" name="channelRef" type="flow:channelRefType">
+				<annotation>
+					<documentation>Reference to a channel on which this adapter is
+						listening or on which it is
+						sending events. The reference is an
+						implied model URN in URI form (for example,
+						"model://global/MyChannel"). JMS is also supported (for example,
+						"jms:/some/jms/destination").
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="eventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Implied URNs that denote the types of events that
+						this adapter can handle (receive / send).
+						The reference is an
+						implied model URN in URI form (for example,
+						"model://TheNs/MyEvent/1.2.3").
+						Wildcards are supported for event
+						namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="attributeDef" type="flow:attributeDefType">
+				<annotation>
+					<documentation>An attribute for this adapter.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Step Types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<complexType name="stepType">
+		<annotation>
+			<documentation>A step is a processing stage implemented by a
+				'handler' and referenced by 'paths'.
+				The handler for the step must be
+				defined and this can be defined either
+				inline or as a modeled handler
+				referenced (the latter is preferred). Attribute values can be
+				defined for the
+				handler. Optionally, a rule
+				can be defined for the
+				step, and this rule can be defined inline or a
+				modeled rule
+				referenced (again,
+				referenced is preferred).
+
+				Attributes can be
+				defined. Attributes defined at flow level also apply
+				to
+				steps.
+				Attribute values defined at step level override corresponding
+				attribute values defined at flow level.
+			</documentation>
+		</annotation>
+		<sequence>
+			<choice maxOccurs="1" minOccurs="1">
+				<element maxOccurs="1" minOccurs="1" ref="flow:handler">
+					<annotation>
+						<documentation>In-line definition of the handler. Usage of this
+							element should be avoided as
+							usage of anonymous handlers reduces
+							opportunities for handler-reuse. Handlers should always
+							be
+							explicitly defined in their own model and then used by reference.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" name="handlerTypeRef" type="flow:exactImpliedModelRefType">
+					<annotation>
+						<documentation>Reference to a Handler model (instance of
+							aia_handler). The reference is an
+							implied model URN in URI form
+							(for example, "model://TheNs/MyHandler/1.2.3")
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+			<element maxOccurs="1" minOccurs="0" name="attributeGroupRef" type="flow:attributeGroupRefType">
+				<annotation>
+					<documentation>An optional reference to an attribute group. Allows
+						re-using the attribute values
+						from the referenced attribute group
+						in this step. Note that any additional attributes specified
+						as part
+						of "attribute" elements for this step will override the values of
+						the attribute group
+						(based on attribute name). The names of the
+						attributes part of the attribute group must match
+						up with the names
+						of the attributes as defined inside the handler if the step uses a
+						handler defined in a handler model (as opposed to an in-line
+						handler).
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="attribute" type="flow:attributeValueType">
+				<annotation>
+					<documentation>Attribute values for this step. If the step uses a
+						handler defined in a handler
+						model (as opposed to an in-line
+						handler), the names of the attributes
+						must match up with the
+						names
+						of the attributes as defined inside
+						the handler. The values
+						assigned to attributes
+						here will override
+						default values defined at
+						handler attribute level. They will also
+						override any values of
+						attributes coming from an optionally
+						referenced attribute group.
+					</documentation>
+				</annotation>
+			</element>
+			<choice maxOccurs="1" minOccurs="0">
+				<element maxOccurs="1" minOccurs="1" ref="flow:rule">
+					<annotation>
+						<documentation>In-line definition of a rule. Usage of this element
+							should be avoided as
+							usage of anonymous rules reduces
+							opportunities for rule-reuse. Rules should always
+							be explicitly
+							defined in their own model and then used by reference.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" name="ruleRef" type="flow:exactImpliedModelRefType">
+					<annotation>
+						<documentation>Reference to a rule model. The reference is an
+							implied model URN in URI form (for
+							example,
+							"model://TheNs/MyRule/1.2.3").
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+		</sequence>
+		<attribute name="name" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>The name of this step. Steps are used inside "path"
+					constructs.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="instances" type="string" use="optional">
+			<annotation>
+				<documentation>
+					The number of instances of the step. The default
+					number of
+					instances is 1.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="clonedStepType">
+		<annotation>
+			<documentation>A cloned step is a step in a flow that has exactly the
+				same configuration as another (named)
+				step. It is used in flows where
+				there are multiple steps that are configured exactly the same way.
+			</documentation>
+		</annotation>
+		<attribute name="name" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>The name of this step. Steps are used inside "path"
+					constructs.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="clonedStepRef" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>A reference to another step.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Handler Types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<element name="handler" type="flow:handlerType"/>	<!-- Used by both inline and modelled handlers -->
+
+	<complexType name="handlerType">
+		<annotation>
+			<documentation>A handler is a component which is
+				used to process
+				steps. The class or
+				bean which implements the handler must be
+				specified.
+
+				Input and output invocation attributes can be defined.
+				These are passed /
+				returned by event-handling methods. References to
+				modeled event
+				types which the
+				handler expects to send or receive can
+				be listed.
+				Input and output
+				ports can be listed.
+			</documentation>
+		</annotation>
+		<sequence>
+			<choice maxOccurs="1" minOccurs="1">
+				<annotation>
+					<documentation>A handler is always backed by a Java class. The java
+						class can be explicitly
+						specified, or its CDI name can be
+						specified.
+					</documentation>
+				</annotation>
+				<element maxOccurs="1" minOccurs="1" name="className" type="oss_common:javaClassNameType">
+					<annotation>
+						<documentation>The full Java class name implementing this handler.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" name="named" type="oss_common:nameInformationType">
+					<annotation>
+						<documentation>The name of the bean (@Named) implementing this
+							handler.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+			<element maxOccurs="1" minOccurs="0" ref="flow:handlerFamily">
+				<annotation>
+					<documentation>The family of handlers the handler belongs to. Rules
+						refer to the handlerFamily
+						to restrict the type of handler they can
+						be deployed to.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="0" ref="flow:engineFamily">
+				<annotation>
+					<documentation>The family of engines that can make use of this
+						handler.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="attributeDef" type="flow:attributeDefType">
+				<annotation>
+					<documentation>An attribute for this handler.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="inputInvocationAttributeDef" type="flow:attributeDefType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="outputInvocationAttributeDef" type="flow:attributeDefType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="inputEventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Implied URNs that denote the types of events that
+						this handler can consume. The reference is
+						an implied model URN in
+						URI form (for example, "model://TheNs/MyEvent/1.2.3"). Wildcards
+						are
+						supported for event namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="outputEventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Implied URNs that denote the types of events that
+						this handler can emit. The reference is an
+						implied model URN in URI
+						form (for example, "model://TheNs/MyEvent/1.2.3"). Wildcards are
+						supported for event namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="inputPort" type="flow:portType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="outputPort" type="flow:portType"/>
+		</sequence>
+	</complexType>
+
+	<element name="handlerFamily">
+		<annotation>
+			<documentation>The 'handlerFamily' element may be used to restrict
+				the handlers that can execute rules. This
+				prevents rules from being
+				executed by handlers that cannot make
+				sense of the rule.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="uri" type="oss_common:uriType"/>
+		</complexType>
+	</element>
+
+	<complexType name="portType">
+		<annotation>
+			<documentation>A port is a named ingress or egress for a handler or a
+				rule. References to modeled event
+				types which are expected to be
+				received or sent on the port can be
+				listed.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="eventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Implied URNs that denote the types of events that
+						this port can handle. The reference is an
+						implied model URN in URI
+						form (for example, "model://TheNs/MyEvent/1.2.3"). Wildcards are
+						supported for event namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="name" type="string" use="required"/>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Rule types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<element name="rule" type="flow:ruleType">
+		<annotation>
+			<documentation>The 'rule' element defines a Rule; that is, a
+				specification of event processing logic.
+			</documentation>
+		</annotation>
+	</element>
+
+	<complexType name="ruleType">
+		<annotation>
+			<documentation>A rule is a specification of event
+				processing logic.
+				References to modeled
+				event types which can be
+				handled, and which are
+				generated, can be listed. Input and output
+				ports can be
+				listed. The
+				rule logic can be specified inline and/or a
+				modeled rule referenced.
+				Multiple rules are allowed.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" ref="flow:handlerFamily">
+				<annotation>
+					<documentation>The family of handlers the rule can be deployed to.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="inputEventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Optional references to Modeled Events, denoting the
+						types of events that the rule can handle.
+						The reference is an
+						implied model URN in URI form (for example,
+						"model://TheNs/MyEvent/1.2.3").
+						Wildcards are supported for event
+						namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="outputEventTypeRef" type="flow:eventTypeRefType">
+				<annotation>
+					<documentation>Optional references to Modeled Events, denoting the
+						types of events that the rule emits.
+						The reference is an implied
+						model URN in URI form (for example,
+						"model://TheNs/MyEvent/1.2.3").
+						Wildcards are supported for event
+						namespace, name and version.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="unbounded" minOccurs="0" name="inputPort" type="flow:portType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="outputPort" type="flow:portType"/>
+			<choice maxOccurs="unbounded" minOccurs="1">
+				<element name="ruleInline" type="string">
+					<annotation>
+						<documentation>Rule 'source code' for simple rules. Typically some
+							scripting/interpreted language.
+						</documentation>
+					</annotation>
+				</element>
+				<element name="ruleResource" type="flow:ruleResourceType">
+					<annotation>
+						<documentation>Reference to artifact that contains the rule logic.
+							For example, the name of a
+							file containing the rule logic.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+		</sequence>
+		<attribute name="name" type="string" use="optional"/>
+	</complexType>
+
+	<complexType name="ruleResourceType">
+		<annotation>
+			<documentation>Reference to artifact that contains the rule logic.
+				For example, a python file containing
+				instructions how to process the
+				events.
+			</documentation>
+		</annotation>
+		<attribute name="uri" type="oss_common:uriType" use="required"/>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Flow construct types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<complexType name="capabilitiesType">
+		<annotation>
+			<documentation>Capabilities required by this flow.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="requiredCapability" type="flow:capabilityName"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="capabilityName">
+		<annotation>
+			<documentation>The capability name, for example, CORBA.
+			</documentation>
+		</annotation>
+		<attribute name="name" type="string" use="required"/>
+	</complexType>
+
+	<complexType name="pathType">
+		<annotation>
+			<documentation>A path is a segment of a flow. The segment starts with
+				'from' and may contain multiple 'to'
+				elements, thereby forming a
+				pipeline of processing. As last element, a
+				'choice' or 'toMany'
+				element may
+				be used, which branches the flow. If the branch has
+				additional
+				sub-branches or pipeline, separate 'path'
+				elements have to
+				be used.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="from" type="flow:fromType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="to" type="flow:toType"/>
+			<choice maxOccurs="1" minOccurs="0">
+				<element maxOccurs="1" minOccurs="1" name="choice" type="flow:choiceType"/>
+				<element maxOccurs="1" minOccurs="1" name="toMany" type="flow:toManyType"/>
+			</choice>
+		</sequence>
+		<attribute name="transaction" type="flow:transactionType" use="optional">
+			<annotation>
+				<documentation>The transactionality of this (sub-)flow.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="fromType">
+		<annotation>
+			<documentation>Defines the beginning of a path.
+			</documentation>
+		</annotation>
+		<attribute name="uri" type="oss_common:uriType" use="required"/>
+	</complexType>
+
+	<complexType name="toType">
+		<annotation>
+			<documentation>Defines a destination in a path.
+			</documentation>
+		</annotation>
+		<attribute name="uri" type="oss_common:uriType" use="required">
+			<annotation>
+				<documentation>The step that should be executed.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="toManyType">
+		<annotation>
+			<documentation>Defines a branch in the path. How data is branched is
+				not specified, but depends solely on
+				the handler used within the step
+				that does the branching.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="to" type="flow:toType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="choiceType">
+		<annotation>
+			<documentation>Use in choice/when construct which represents a
+				conditional flow.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="to" type="flow:toWhenType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="toWhenType">
+		<annotation>
+			<documentation>Use in choice/when/to construct which represents
+				conditional flow.
+				An expression must be provided which evaluates to
+				true or false.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="when" type="flow:exprType"/>
+		</sequence>
+		<attribute name="uri" type="oss_common:uriType" use="required"/>
+	</complexType>
+
+	<complexType name="exprType">
+		<annotation>
+			<documentation>An expression which evaluates to true or false. The
+				expression language can be indicated
+				using the 'language' attribute.
+				This attribute is optional so it is assumed there is a supported
+				default
+				expression language.
+			</documentation>
+		</annotation>
+		<simpleContent>
+			<extension base="string">
+				<attribute name="language" type="string" use="optional"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Attribute types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<complexType name="attributeDefType">
+		<annotation>
+			<documentation>An attribute definition. Based on oss_common standard
+				attribute definition types.
+				The 'source' element 'uri' can be used to
+				indicate a source from which
+				a value for the attribute should be
+				obtained.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:eModelAttributeDefinition">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="source">
+						<complexType>
+							<attribute name="uri" type="oss_common:uriType"/>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="attributeValueType">
+		<annotation>
+			<documentation>An attribute value. Only one of 'complexValue',
+				'value' or 'source' may be specified.
+				It is recommended that the
+				'complexValue' element is used for the value
+				since this allows for
+				XML schema based type-safety validation.
+				Alternatively, the 'value'
+				attribute can
+				be used to supply the value
+				but be aware that this does
+				not allow for XML schema based
+				type-safety
+				validation. The 'source'
+				attribute can be used to indicate
+				a source from which a value for
+				the
+				attribute
+				should be obtained.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="complexValue" type="oss_common:abstractValue">
+				<annotation>
+					<documentation>The value for this attribute. Usage of this element
+						is preferred over usage of the
+						"value" attribute.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="name" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>The name of the attribute that is given the value.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="value" type="string" use="optional">
+			<annotation>
+				<documentation>The value of the attribute. Usage of this attribute
+					should be avoided; instead, the
+					'complexValue' element should be
+					used instead, as it is far more expressive and type-safe.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="source" type="oss_common:uriType" use="optional">
+			<annotation>
+				<documentation>Optionally, from where the attribute value should be
+					obtained. If this attribute is used,
+					then both 'complexValue' and
+					'value' should not be supplied.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="attributeGroupRefType">
+		<annotation>
+			<documentation>Reference to an attribute group.
+			</documentation>
+		</annotation>
+		<attribute name="groupName" type="oss_common:nameInformationType" use="required"/>
+	</complexType>
+
+	<complexType name="attributeGroupType">
+		<annotation>
+			<documentation>An attribute group is a collection of attribute values
+				that may be re-used in other parts of
+				a flow, for example, within
+				steps. This allows for different elements within a flow, having the
+				same
+				values for the same attributes, to define these only once and
+				then re-use them multiple times.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="attribute" type="flow:attributeValueType">
+				<annotation>
+					<documentation>One or more attribute values for this attribute
+						group. The names of the attributes in
+						this group must be unique.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute name="name" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>The name of the attribute group. By this name the
+					attribute group may be referred by from
+					within attribute group
+					references (for example, when creating path steps). Within any
+					given flow,
+					the names of attributes groups must be unique.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ 
+		Other types +++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ -->
+
+	<element name="engineFamily">
+		<complexType>
+			<attribute name="uri" type="oss_common:uriType"/>
+		</complexType>
+	</element>
+
+	<complexType name="exactImpliedModelRefType">
+		<annotation>
+			<documentation>A reference to a model. The reference is an implied
+				URN.
+			</documentation>
+		</annotation>
+		<attribute name="uri" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value="model://(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/[0-9a-zA-Z_\.]+)?"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<complexType name="eventTypeRefType">
+		<annotation>
+			<documentation>A type to specify event types based on URI. At
+				present, only Modeled Events are supported: implied
+				URN to Modeled
+				Events. Wildcards may be used for namespace, name and/or version to
+				specify multiple events
+				at the same time.
+
+				This type may be extended in
+				the future to allow for other types of
+				resources as well (perhaps
+				POJO classes).
+			</documentation>
+		</annotation>
+		<attribute name="uri" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value="model://(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/[0-9a-zA-Z_\.]+"/> <!-- "model://FM/AlarmEvent/1.2.0" -->
+					<pattern value="model://(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/\*"/>              <!-- "model://FM/AlarmEvent/*" -->
+					<pattern value="model://(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/\*/\*"/>                                     <!-- "model://FM/*/*" -->
+					<pattern value="model://\*/\*/\*"/>                                                              <!-- "model://*/*/*" -->
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<complexType name="channelRefType">
+		<annotation>
+			<documentation>A type to specify channels based on URI. At present,
+				Modeled Channels are supported:
+				implied URN to Modeled Channel. Also,
+				direct specification of a JMS channel may be done.
+
+				This type may be
+				extended in the future to allow for other types of
+				resources as well.
+			</documentation>
+		</annotation>
+		<attribute name="uri" use="required">
+			<simpleType>
+				<restriction base="string">
+					<pattern value="model://global/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*"/> <!-- "model://global/MyChannel" -->
+					<pattern value="jms:([a-zA-Z0-9_/\-\.])+"/>                 <!-- "jms:/mychannel/some.ext" -->
+					<pattern value="jms:queue:([a-zA-Z0-9_/\-\.])+"/>           <!-- "jms:queue:/mychannel/some.ext" -->
+					<pattern value="jms:topic:([a-zA-Z0-9_/\-\.])+"/>           <!-- "jms:topic:/mychannel/some.ext" -->
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<simpleType name="synchronicityType">
+		<restriction base="string">
+			<enumeration value="SYNCHRONOUS"/>
+			<enumeration value="ASYNCHRONOUS"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="modelUrnType">
+		<attribute name="modelUrn" type="oss_common:genericUrnType" use="required"/>
+	</complexType>
+
+	<simpleType name="transactionType">
+		<restriction base="string">
+			<enumeration value="REQUIRED"/>
+			<enumeration value="REQUIRES_NEW"/>
+			<enumeration value="MANDATORY"/>
+			<enumeration value="NOT_SUPPORTED"/>
+			<enumeration value="SUPPORTS"/>
+			<enumeration value="NEVER"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="sinkType">
+		<sequence>
+			<element minOccurs="0" name="property"
+				maxOccurs="unbounded" type="flow:propertyType">
+
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="filter" type="flow:filterType">
+
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="data-routing" type="flow:dataRoutingType"/>
+		</sequence>
+		<attribute name="uri" type="string" use="required"/>
+	</complexType>
+
+	<complexType name="propertyType">
+		<sequence/>
+		<attribute name="name" type="string" use="required"/>
+		<attribute name="value" type="string" use="required"/>
+	</complexType>
+
+	<complexType name="SinksType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="sink" type="flow:sinkType"/>
+		</sequence>
+	</complexType>
+
+
+	<complexType name="recordType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="by-regex" type="flow:byRegexType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="by-name" type="flow:byNameType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="by-schema" type="flow:bySchemaType"/>
+			<element maxOccurs="unbounded" minOccurs="0" name="by-function" type="flow:byFunctionType"/>
+		</sequence>
+	</complexType>
+
+	<complexType name="partitionStrategyType">
+		<sequence maxOccurs="1" minOccurs="0">
+
+			<choice maxOccurs="1" minOccurs="0">
+				<element name="by-function" type="flow:byFunctionType"/>
+				<element name="by-key" type="flow:byKeyType"/>
+				<element name="round-robin" type="flow:roundRobinType"/>
+			</choice>
+		</sequence>
+	</complexType>
+
+	<complexType name="filterType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="records" type="flow:recordsType">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="dataRoutingType">
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="partition-strategy" type="flow:partitionStrategyType">
+			</element>
+		</sequence>
+	</complexType>
+
+	<complexType name="inputType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="attribute" type="flow:attributeValueType">
+			</element>
+			<element maxOccurs="1" minOccurs="1" name="sources" type="flow:SourcesType">
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="attributeGroupRef" type="flow:attributeGroupRefType">
+			</element>
+		</sequence>
+		<attribute name="name" type="string"/>
+	</complexType>
+
+	<complexType name="sourceType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="0" name="property"
+				type="flow:propertyType" />
+		</sequence>
+		<attribute name="uri" type="string"/>
+	</complexType>
+
+	<simpleType name="partitionerType">
+		<restriction base="string">
+			<enumeration value="ROUND_ROBIN"/>
+			<enumeration value="RANDOM"/>
+			<enumeration value="BY_KEY"/>
+			<enumeration value="FUNCTION"/>
+		</restriction>
+	</simpleType>
+
+	<complexType name="byNameType">
+		<simpleContent>
+			<extension base="string">
+			</extension>
+		</simpleContent>
+	</complexType>
+	<complexType name="byRegexType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="attribute" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="bySchemaType">
+		<simpleContent>
+			<extension base="string">
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="byFunctionType">
+		<simpleContent>
+			<extension base="string">
+				<attribute name="attribute" type="string"/>
+			</extension>
+		</simpleContent>
+	</complexType>
+
+	<complexType name="SourcesType">
+		<sequence>
+			<element maxOccurs="unbounded" minOccurs="1" name="source" type="flow:sourceType">
+			</element>
+		</sequence>
+	</complexType>
+
+
+    <complexType name="byKeyType">	
+    	<simpleContent>
+			<extension base="string">
+			</extension>
+		</simpleContent>
+	</complexType>
+
+    <complexType name="roundRobinType">
+   		<simpleContent>
+			<extension base="string">
+			</extension>
+		</simpleContent>
+	</complexType>
+
+    <complexType name="recordsType">
+    	<sequence>
+
+
+
+    		<element maxOccurs="unbounded" minOccurs="1" name="record" type="flow:recordType">
+    		</element>
+    	</sequence>
+    </complexType>
+
+    <complexType name="propertiesType">
+    	<sequence>
+    		<element name="property" type="flow:propertyType" maxOccurs="unbounded" minOccurs="1"></element>
+    	</sequence>
+    </complexType>
+</schema>

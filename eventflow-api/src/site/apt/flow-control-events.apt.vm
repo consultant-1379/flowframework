@@ -1,0 +1,75 @@
+    ------
+    Flow Framework - Control Events
+    ------
+    
+Control Events
+
+    {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/apidocs/com/ericsson/oss/itpf/common/event/ControlEvent.html} Control Events}} are events that can be used to dictate or modify the behavior of flow components that implement the {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/apidocs/com/ericsson/oss/itpf/common/Controllable.html} <Controllable> }} interface. Control Events can also be used to notify other flow components about configuration changes and status notifications. 
+
+Generating Control Events
+
+    Control Events can be triggered in the following way.
+
+    Flow components are passed an EventHandlerContext instance through the {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/apidocs/com/ericsson/oss/itpf/common/event/handler/EventHandler.html#init(com.ericsson.component.aia.itpf.common.event.handler.EventHandlerContext)} <init()>}} method. This class can send a Control Event to all the components involved in the current flow. 
+
+Usage of Control Events
+
+    Event Handlers and I/O Adapters that implement the <Controllable> interface can receive and react to Control Events. Event Handlers themselves can use Control Events to send notifications to other components in the flow execution. 
+
+    The flow engine can use Control Events to notify the handlers in a flow execution about external changes such as configuration and failure scenarios. The flow engine is responsible for delivering the Control Events to all the applicable components in the flow.
+
+Differentiating Control Events
+
+    Control Events contain a {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/apidocs/com/ericsson/oss/itpf/common/event/ControlEvent.html} <type>}} attribute which is used to differentiate between various types of Control Events. The <Controllable> components can choose to react to specific types of Control Events. 
+
+Recommendations
+
+    Control Events should not be triggered from within the {{{https://arm101-eiffel004.lmera.ericsson.se:8443/nexus/content/sites/cds/FlowFramework/latest/eventflow-api/apidocs/com/ericsson/oss/itpf/common/event/handler/EventHandler.html#init(com.ericsson.component.aia.itpf.common.event.handler.EventHandlerContext)} <init()>}} method of handlers since all the components of the flow may not have been initialized.
+
+Examples
+
+    An Event Handler triggering a Control Event through the EventHandlerContext
+
++-----+
+    public class ExampleEventHandler implements EventHandler() {
+
+        private EventHandlerContext eventHandlerContext;
+
+        @Override
+        public void init(final EventHandlerContext ctx) {
+    
+            eventHandlerContext = ctx;
+            ....
+            ....
+        }
+
+        private notifyOtherFlowComponents() {
+            ControlEvent controlEvent = new ContolEvent(ControlEvent.XXXX_XXXX);
+            eventHandlerContext.sendControlEvent(controlEvent);
+        }
+        ....
+        ....
+    }
++-----+
+
+    An Event Handler implementing the Controllable interface and reacting to a Control Event
+
++-----+
+
+    public class ExampleEventHandler implements EventHandler, Controllable {
+
+        @Override
+        public void init(EventHandlerContext ctx) {
+            //initialize
+        }
+
+        @Override
+        public void react(final ControlEvent controlEvent) {
+            if(controlEvent.getType() == CONTROL_EVENT_TYPE){ 
+                //Handler reacts only to specific types of events
+            }
+        }
+        ....
+        ....
+    }
++-----+

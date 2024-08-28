@@ -1,0 +1,42 @@
+	------
+	Flow Framework
+	------
+
+Flow Framework
+
+* What is Flow Framework?
+
+	Flow Framework provides common artifacts needed for building components that can participate in
+	 event flows and exchange and process events.
+
+	The Flow Framework Engines (implementations of the Flow Framework), such as the
+	 {{{${documentation_EPS}/index.html}Event Processing Service}} and the {{{${documentation_Mediation}} Mediation Service}}
+	implement the Flow API to consume models conforming to the {{{${nexusUrl_metamodels}}Flow DSL}}.
+
+
+
+* What is Flow Engine?
+
+	A flow engine is the runtime environment for a flow.
+
+	A flow engine takes a flow definition file (XML based) as an input and starts executing a flow of
+	 actions as described in the XML file. A flow is constructed of inputs, outputs and action steps that
+	 define the flow behavior.
+
+	A flow engine implementation must realize the Flow DSL in order to allow flows specified using
+	 the DSL to be deployed to the engine.
+
+	A flow engine should support the Flow API to implement flows in order to facilitate handler
+	 implementation reuse across different flow engine implementations.
+
+* When to use Flow Framework?
+
+	Flow Framework can be used whenever you are building reusable components that operate on events
+	 in some defined order.
+
+* Flow Framework Architecture
+
+	{{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Flow+Framework%2C+Module+View}Module View}}
+
+	{{{http://confluence-oss.lmera.ericsson.se/display/OSSARCH/Flow+Framework%2C+Conceptual+View}Conveptual View}}
+	

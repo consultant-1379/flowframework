@@ -1,0 +1,25 @@
+
+How to create an IO Adapter
+
+    Input adapter implementations should implement {{{./apidocs/com/ericsson/oss/itpf/common/io/InputAdapter.html}InputAdapter}} interface.
+    They are able to receive events from the outside world and pass them downstream to flow for further processing.
+
+    Output adapter implementations should implement {{{./apidocs/com/ericsson/oss/itpf/common/io/OutputAdapter.html}OutputAdapter}} interface.
+    It is usually last component in the flow capable of sending already processed event(s) to components external to the flow.
+
+    All event handlers, including IO Adapters, should extend {{{./apidocs/com/ericsson/oss/itpf/common/event/handler/AbstractEventHandler.html}AbstractEventHandler}}.
+    If your IO adapter implements the destroy() method, then include a call to super.destroy();
+
+    It is the responsibility of IO adapter developer to ensure uniqueness of URI it understands and to provide sufficient configuration parameters so that adapter
+    can be customized for different flows (Eg:- thread pool size, topic/queue names, IP address/port of broker configurable).
+
+    FlowEngine tries to find IO adapter implementations using {{{http://docs.oracle.com/javase/6/docs/api/java/util/ServiceLoader.html}Java SPI}}.
+    The IO adapter implementation is identified by placing a provider-configuration file in the resource directory META-INF/services inside jar file
+    where IO adapter implementations are. The file's name is the fully-qualified name of the IO adapter interface.
+    The file contains a list of fully-qualified binary names of concrete provider classes (the Input or Output Adapter implementation), one per line.
+
+Threading and Concurrency of IO Adapters
+
+    Input adapters control threading themselves and this is usually configurable per input adapter. Output Adapter must be written in thread-safe manner.
+    Multiple threads will be invoking onEvent() method of output adapter and it is the responsibility of output adapter developer to ensure this method is
+    thread-safe. But output adapters can control threading towards external systems themselves (for example to optimize sending data in batches to hadoop or jms).

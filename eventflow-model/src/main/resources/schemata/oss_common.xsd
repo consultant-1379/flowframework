@@ -1,0 +1,2083 @@
+<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!-- ****************************************************************************************************************** 
+
+                                             COPYRIGHT Ericsson 2013
+
+The copyright to the computer program(s) herein is the property of Ericsson Inc. The programs may be used and/or copied
+only with written permission from Ericsson Inc. or in accordance with the terms and conditions stipulated in the
+agreement/contract under which the program(s) have been supplied.
+	
+	
+******************************** Important note on backwards-compatibility ********************************************
+
+This XSD must *always* evolve in a backwards-compatible fashion. Backwards-compatibility is defined as the possibility
+to correctly parse any XML file, adhering to a previous version of this XSD, with the updated version of the XSD. This
+implies that existing elements and attributes of this XSD must not be removed; and likewise that any new elements and
+attributes are made optional.
+
+Any change to this XSD must be *explicitly* signed off and reviewed by the appropriate OSS approval body. Under no
+circumstances must this XSD be modified without having undergone a defined review-process.
+
+Version 1.0: Approved at TC Architecture #523, 31.05.2013
+--><schema xmlns="http://www.w3.org/2001/XMLSchema" xmlns:jxb="http://java.sun.com/xml/ns/jaxb" xmlns:oss_common="urn:com:ericsson:schema:xml:oss:oss_common" xmlns:xjc="http://java.sun.com/xml/ns/jaxb/xjc" elementFormDefault="qualified" jxb:extensionBindingPrefixes="xjc" jxb:version="2.0" targetNamespace="urn:com:ericsson:schema:xml:oss:oss_common" version="1.0">
+
+	<annotation>
+		<documentation>The OSS common schema contains commonly used constructs and is typically referred-to by
+			other schemata which use or extend the types defined herein. 
+		</documentation>
+	</annotation>
+
+	<annotation>
+		<documentation>This is the JAXB binding information for code-generation by the xjc tool.
+		</documentation>
+		<appinfo>
+			<jxb:globalBindings>
+              <xjc:serializable uid="1"/>
+        	</jxb:globalBindings>
+			<jxb:schemaBindings>
+				<jxb:package name="com.ericsson.component.aia.itpf.common.modeling.flow.schema.gen.oss_common"/>
+			</jxb:schemaBindings>
+		</appinfo>
+	</annotation>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                    EModelDefinition and EmodelAttributeDefinition
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="eModelDefinition">
+		<annotation>
+			<documentation>The EModelDefinition is the base type for _ALL_ types of models defined. It supports
+				attributes and elements required by all types of models. It is mandatory for all models being defined
+				to have the respective root element inherit from this type.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" ref="oss_common:modelCreationInfo">
+				<annotation>
+					<documentation>Information about the model creation. This is mandatory, as its content is
+						interpreted by the modeling toolchain to derive dependencies and produce documentation.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="inheritsFrom" type="oss_common:impliedUrnType">
+				<annotation>
+					<documentation>Denotes the parent model, if any. The parent model, if it exists, must be of the
+						same type. The parent model is identified by namespace, name and version. For model types that
+						do not support namespaces, the literal "global" (without the quotes) must be used as namespace.
+						For model types that do not support versioning, the version of the parent model may be omitted.
+						The type is implied, i.e. must be omitted.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="1" name="desc" type="oss_common:descriptionType">
+				<annotation>
+					<documentation>A human-readable text describing the model. An effort must be made to document
+						models in a meaningful way, as the description will be used to generate end-user
+						documentation. Note that it is mandatory to supply a description for models.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute ref="oss_common:ns" use="required">
+			<annotation>
+				<documentation>The namespace of the model. How exactlythe namespace looks like differs
+					between	different model types, but is typically similar to java package names (but need not
+					be). Note it is mandatory to supply the namespace and also note the restrictions on the
+					characters allowed within a namespace.
+					
+					Some model types do not support the notion of namespace; for these types their models should
+					have as namespace a value of "global" (without the quotes, lowercase).
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute ref="oss_common:name" use="required">
+			<annotation>
+				<documentation>The name of the model. The name is always mandatory.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute ref="oss_common:version" use="optional">
+			<annotation>
+				<documentation>The version of the model in x.y.z format. Some types of models do not support
+					versioning; for these, the version may be omitted.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute default="CURRENT" ref="oss_common:lifeCycle" use="optional">
+			<annotation>
+				<documentation>The life-cycle state in which the model is at present. Defaults to "current".
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute ref="oss_common:lifeCycleDesc" use="optional">
+			<annotation>
+				<documentation>A human-readable text giving additional information to the life-cycle state of the
+					model. This may be used, for example, to explain why the model is deprecated or obsoleted and
+					which other models to use instead to fulfill the same functionality.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType abstract="true" name="eModelNamedEntityDefinition">
+		<annotation>
+			<documentation>The EModelNamedEntityDefinition may be used as base type for anything that has to be "named".
+				It is quite generic and should only be used when using eModelAttributeDefinition is not appropriate
+				(i.e. if the named entity does not have a data type).
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="1" name="desc" type="oss_common:descriptionType">
+				<annotation>
+					<documentation>A human-readable text describing the entity. An effort must be made to document
+						entities in a meaningful way, as the description will be used to generate end-user
+						documentation. Note that it is mandatory to supply a description for entities.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+		<attribute ref="oss_common:name" use="required">
+			<annotation>
+				<documentation>The name of the entity. The name is always mandatory.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute default="CURRENT" ref="oss_common:lifeCycle" use="optional">
+			<annotation>
+				<documentation>The life-cycle state in which the entity is at present. Defaults to "current".
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute ref="oss_common:lifeCycleDesc" use="optional">
+			<annotation>
+				<documentation>A human-readable text giving additional information to the life-cycle state of the
+					entity. This may be used, for example, to explain why the entity is deprecated or obsoleted
+					and which other entity to use instead to fulfill the same functionality.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType abstract="true" name="eModelAttributeDefinition">
+		<annotation>
+			<documentation>The EModelAttributeDefinition is the base type for attribute-types used within EModels.
+				Any model types using attributes should inherit from eModelAttributeDefinition.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:eModelNamedEntityDefinition">
+				<sequence>
+					<element maxOccurs="1" minOccurs="1" name="type" type="oss_common:abstractDataType">
+						<annotation>
+							<documentation>The data type of the attribute and possible constraints.
+							</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="1" minOccurs="0" name="default" type="oss_common:abstractValue">
+						<annotation>
+							<documentation>A possible default value of the attribute. If supplied, must match in type to
+								the data type.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+				<attribute default="false" name="mandatory" type="boolean" use="optional">
+					<annotation>
+						<documentation>A "mandatory" attribute is an attribute for which a value has to be specified.
+							The specified value may be null or any other value, as possibly restricted by the constraints
+							for the attribute.
+							
+							Note that "mandatory" is not the same as saying that the attribute value must be "non-null".
+							"Mandatory" means that a value has to be supplied for the attribute, without stipulating the
+							allowed value range for that attribute (null is part of that value range).   
+						</documentation>
+					</annotation>
+				</attribute>
+				<attribute default="false" name="immutable" type="boolean" use="optional">
+					<annotation>
+						<documentation>An "immutable" attribute is an attribute whose value, once set, cannot be
+							modified. It is conceptually the same as the "final" qualifier in Java.
+							
+							Note that due to the ternary value space (unset, set-and-null, set-and-not-null) it is
+							possible that an immutable attribute can have a set value of null, which then cannot be
+							modified.
+						</documentation>
+					</annotation>
+				</attribute>
+				<attribute default="false" name="key" type="boolean" use="optional">
+					<annotation>
+						<documentation>Denotes this attribute to be a "key". A key indicates that this attribute can be
+							used to uniquely identity instances of the enclosing type. As such, it can be considered a
+							"Primary Key".
+						</documentation>
+					</annotation>
+				</attribute>
+				<attribute default="false" name="sensitive" type="boolean" use="optional">
+					<annotation>
+						<documentation>Denotes that this attribute is security-sensitive and that before divulging the
+							value of the attribute an authorization check shall be done whether the current principal is
+							allowed to see the value. It is up to application code to interpret this flag and to act in
+							an appropriate manner, such as consulting a Security Service.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                         EModel Extensions
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="eModelExtensionDefinition">
+		<annotation>
+			<documentation>The EModel Extension definition is the base type for any EModel that models extensions to
+				other types. It is just as much an EModel as the EModel's it extends.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:eModelDefinition">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="1" name="extendedModelElement" type="oss_common:extendedModelElementType">
+						<annotation>
+							<documentation>Information about one or more model element that are extended by this extension.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>	
+	</complexType>
+
+	<complexType abstract="true" name="eModelAttributeExtensionDefinition">
+		<annotation>
+			<documentation>The EModel Attribute Extension definition is the base type for any attribute of an EModel that
+				models extensions to attributes.
+			</documentation>
+		</annotation>
+		<attribute name="attrName" use="required">
+			<annotation>
+				<documentation>The name(s) of the attribute(s) that is/are extended. 
+				</documentation>
+			</annotation>
+			<simpleType>
+				<list itemType="string"/>
+			</simpleType>
+		</attribute>
+		<attribute name="sensitive" type="boolean" use="optional">
+			<annotation>
+				<documentation>Denotes that this attribute is security-sensitive and that before divulging the
+					value of the attribute an authorization check shall be done whether the current principal is
+					allowed to see the value. Via the extension mechanism it is not possible to disable this feature,
+					only to enable it (in other words, specifying FALSE for sensitive has no effect).
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="extendedModelElementType">
+		<annotation>
+			<documentation>A type that holds information about the model element (type, namespace, name, version) that
+				is extended.
+			</documentation>
+		</annotation>
+		<attribute name="urn" type="oss_common:wildcardedImpliedUrnType">
+			<annotation>
+				<documentation>The URN of the model element that this extension extends. This URN must be implied
+					(i.e. the type must not be specified), and the namespace, name or version may be denoted to be "any"
+					by using the "*" character.
+				</documentation>
+			</annotation>
+		</attribute>	
+	</complexType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                         Model reference element
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+	
+	<complexType name="urnType">
+		<annotation>
+			<documentation>This is a generic URN type that may be used for any purpose. It is way too loose and must be
+				removed in the future in favour of something more precise. It will allow pretty much any content, as
+				long as there are enough slashes and non-empty path elements in it.
+			</documentation>
+		</annotation>
+		<attribute name="urn" type="oss_common:genericUrnType" use="required">
+			<annotation>
+				<documentation>
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<complexType name="impliedUrnType">
+		<annotation>
+			<documentation>The uniform resource name of a model. Values of this type can be used to identity exactly one
+				model. The model type is implied; namespace and name are mandatory. The version is optional. Wildcards
+				are not allowed.
+			</documentation>
+		</annotation>
+		<attribute name="urn" type="oss_common:exactImpliedUrnType" use="required">
+			<annotation>
+				<documentation>The implied URN.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<simpleType final="#all" name="genericUrnType">
+		<annotation>
+			<documentation>This is a generic URN type that may be used for any purpose. It is way too loose and must be
+				removed in the future in favour of something more precise. It will allow pretty much any content, as
+				long as there are enough slashes and non-empty path elements in it. 
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value=".+"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="exactFullUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to exactly one model. Wildcards are not allowed. URN's must
+				use an escape mechanism (%[hex][hex] where % character denotes that a character is escaped immediately
+				followed by the 2-character hexadecimal value representing the ascii character) for any character not
+				within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				/oss_event/FM/AlarmEvent/1.2.0     - Full URN of a versioned type
+				/oss_channel/global/AlarmChannel   - Full URN of an unversioned type
+				/net_yang/urn%3acom%3aericsson%3ayang/ericsson-context   - Full URN of an unversioned model containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				/oss_event/FM/AlarmEvent     - Wrong; type oss_event is versioned, but version not specified
+				/oss_event/FM/*/1.2.0        - Wrong: Usage of wildcard
+				/oss_channel/global          - Wrong; name missing
+				//global/AlarmChannel        - Wrong; implied type
+				/net_yang/urn:com:ericsson:yang/ericsson-context   - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="/[a-z]([a-z_0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/[0-9a-zA-Z_\.]+)?"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType final="#all" name="exactFullVersionedUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to exactly one versioned model. Wildcards are not allowed.
+				URN's must use an escape mechanism (%[hex][hex] where % character denotes that a character is escaped
+				immediately followed by the 2-character hexadecimal value representing the ascii character) for any
+				character not within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				/oss_event/FM/AlarmEvent/1.2.0     - Full URN of a versioned type
+				/oss_event/F%3aM/AlarmEvent/1.2.0  - Full URN of a versioned type containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				/oss_channel/global/AlarmChannel - Wrong; unversioned type
+				/oss_event/FM/AlarmEvent         - Wrong; type oss_event is versioned, but version not specified
+				/oss_event/FM/*/1.2.0            - Wrong: Usage of wildcard
+				/oss_event/global                - Wrong; name missing
+				//FM/AlarmEvent/1.2.0            - Wrong; implied type
+				/oss_event/FM/Alarm:Event/1.2.0  - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="/[a-z]([a-z_0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/[0-9a-zA-Z_\.]+"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="exactImpliedUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to a single model, whose type is implied. Wildcards are not
+				allowed. URN's must use an escape mechanism (%[hex][hex] where % character denotes that a character is
+				escaped immediately followed by the 2-character hexadecimal value representing the ascii character)
+				for any character not within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				//FM/AlarmEvent/1.2.0              - Implied URN of a versioned type
+				//global/AlarmChannel              - Implied URN of an unversioned type
+				//urn%3acom%3aericsson%3ayang/ericsson-context   - Implied URN of an unversioned model containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				/oss_event/FM/AlarmEvent/1.2.0     - Wrong; model type supplied.
+				/oss_event/FM/*/1.2.0              - Wrong: Usage of wildcard
+				///AlarmEvent/1.2.0                - Wrong: namespace not supplied
+				//global                           - Wrong; name missing
+				//urn:com:ericsson:yang/ericsson-context   - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/[0-9a-zA-Z_\.]+)?"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType final="#all" name="exactImpliedUnversionedUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to a single unversioned model, whose type is implied. Wildcards are not
+				allowed. URN's must use an escape mechanism (%[hex][hex] where % character denotes that a character is escaped
+				immediately followed by the 2-character hexadecimal value representing the ascii character) for any character not
+				within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				//global/AlarmChannel              - Implied URN of an unversioned type
+				//urn%3acom%3aericsson%3ayang/ericsson-context   - Implied URN of an unversioned model containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				//FM/AlarmEvent/1.2.0              - Wrong; versioned type
+				/oss_channel/global/AlarmChannel   - Wrong; model type supplied.
+				//global/*                         - Wrong: Usage of wildcard
+				///AlarmEvent                      - Wrong: namespace not supplied
+				//global                           - Wrong; name missing
+				//urn:com:ericsson:yang/ericsson-context   - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*"/>
+		</restriction>
+	</simpleType>
+	
+	<simpleType final="#all" name="exactImpliedVersionedUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to a single versioned model, whose type is implied. Wildcards are not
+				allowed. URN's must use an escape mechanism (%[hex][hex] where % character denotes that a character is escaped
+				immediately followed by the 2-character hexadecimal value representing the ascii character) for any character
+				not within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				//FM/AlarmEvent/1.2.0              - Implied URN of a versioned type
+				//F%3aM/AlarmEvent/1.2.0           - Implied URN of an versioned model containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				//global/AlarmChannel              - Wrong; unversioned type
+				/oss_event/FM/AlarmEvent/1.2.0     - Wrong; model type supplied.
+				/oss_event/FM/*/1.2.0              - Wrong: Usage of wildcard
+				///AlarmEvent/1.2.0                - Wrong: namespace not supplied
+				//global                           - Wrong; name missing
+				//FM/Alarm:Event/1.2.0             - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/[0-9a-zA-Z_\.]+"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="anyVersionImpliedUrnType">
+		<annotation>
+			<documentation>This URN type is used to refer to a single versioned model, whose type is implied, or to a versioned model of any
+				version by using wildcard character. URN's must use an escape mechanism (%[hex][hex] where % character denotes that a
+				character is escaped immediately followed by the 2-character hexadecimal value representing the ascii character) for any
+				character not within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+				
+				//FM/AlarmEvent/1.2.0              - Implied URN of a versioned type
+				//FM/AlarmEvent/*                  - Implied URN of a versioned type, any model version
+				//FM/Alarm%3aEvent/*               - Implied URN of a versioned type, containing escaped characters (%3a is the hexadecimal value of  ':').
+
+				Invalid examples:				
+
+				//global/AlarmChannel              - Wrong; unversioned type
+				/oss_event/FM/AlarmEvent/1.2.0     - Wrong; model type supplied.
+				//FM/*/1.2.0                       - Wrong: Usage of wildcard in the wrong place
+				///AlarmEvent/1.2.0                - Wrong: namespace not supplied
+				//global                           - Wrong; name missing
+				//FM/Alarm:Event/*                 - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/[0-9a-zA-Z_\.]+"/>
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/\*"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="wildcardedImpliedUrnType">
+		<annotation>
+			<documentation>This URN type allows the "any" wildcard ("*") for namespace, name and version of an URN. 
+				This URN must be implied (i.e. the schema must not be specified), and the namespace, name or version may be
+				denoted to be "any" by using the "*" character. This URN type is typically used for model extensions. URN's
+				must use an escape mechanism (%[hex][hex] where % character denotes that a character is escaped immediately
+				followed by the 2-character hexadecimal value representing the ascii character) for any character not
+				within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples are (assuming the extension extends models of schema oss_eventtype):
+					
+				//FM/AlarmEvent/1.2.0   - Extends exactly that modeled event
+				//FM/AlarmEvent/*       - Extends all modeled events of namespace "FM" and name "AlarmEvent"
+				//FM/*/*                - Extends all modeled events of namespace "FM"
+				//*/*/*                 - Extends all modeled events
+				//FM/Alarm%3aEvent/*    - Extends all modeled events of namespace "FM" and name "Alarm:Event" (%3a is the hexadecimal value of  ':').
+					
+				Partial's are not allowed. Likewise, when "*" is specified for one of the path elements, it must be
+				used for all other path elements after that. Invalid examples:
+					
+				//FM/AlarmEvent/1.2.*   - Partial; not allowed
+				//FM/Alarm*/1.2.0       - Partial; not allowed
+				//FM/*/1.0.0            - Name is "any", so version must then be "any" as well
+				//FM/Alarm:Event/*      - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+
+				If the model element extended is of a type that does not support versioning, the version part of the
+				URN must be omitted. Valid examples (assuming the extension extends models of type oss_channel):
+					
+				//global/AlarmChannel
+				//global/*
+				//*/*
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/[0-9a-zA-Z_\.]+)?"/> <!-- //FM/AlarmEvent/1.2.0 -->
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/\*)?"/>              <!-- //FM/AlarmEvent/* -->
+			<pattern value="//(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/\*(/\*)?"/>                                       <!-- //FM/*/* -->
+			<pattern value="//\*/\*(/\*)?"/>                                                                <!-- //*/*/* -->
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="wildcardedUrnType">
+		<annotation>
+			<documentation>This URN type allows the "any" wildcard ("*") for schema, namespace, name and version of an URN. 
+				This URN type is typically used for model annotations. URN's must use an escape mechanism (%[hex][hex]
+				where % character denotes that a character is escaped immediately followed by the 2-character hexadecimal
+				value representing the ascii character) for any character not within the following ASCII ranges:
+				'-' (hyphen, ASCII 45)
+				'.' (dot, ASCII 46)
+				'0-9' (the digits zero through to nine, both inclusive, ASCII 48-57)
+				'A-Z' (uppercase letters A through to Z, both inclusive, ASCII 65-90)
+				'_' (underscore, ASCII 95)
+				'a-z' (lowercase letters a through to z, both inclusive, ASCII 97-122)
+
+				Valid Examples:
+
+				/oss_eventtype/FM/AlarmEvent/1.2.0   - Extends exactly that modeled event
+				/oss_eventtype/FM/AlarmEvent/*       - Extends all modeled events of namespace "FM" and name "AlarmEvent"
+				/oss_eventtype/FM/Alarm%3aEvent/*    - Extends all modeled events of namespace "FM" and name "Alarm:Event" (%3a is the hexadecimal value of  ':').
+				/oss_eventtype/FM/*/*                - Extends all modeled events of namespace "FM"
+				/oss_eventtype/*/*/*                 - Extends all modeled events
+				/*/*/*/*                             - Extends all models
+					
+				Partial's are not allowed. Likewise, when "*" is specified for one of the path elements, it must be
+				used for all other path elements after that. If "any" model is denoted, the version must not be omitted.
+				Invalid examples:
+					
+				/oss_eventtype/FM/AlarmEvent/1.2.*   - Partial; not allowed
+				/oss_eventtype/FM/Alarm*/1.2.0       - Partial; not allowed
+				/oss_eventtype/FM/*/1.0.0            - Name is "any", so version must then be "any" as well
+				/oss_eventtype/FM/Alarm:Event/*      - Wrong; ':' should be escaped (the hexadecimal value of ':' should be used)
+				/*/*/*                               - Must include version
+					
+				If the schema used is of a type that does not support versioning, the version part of the
+				URN must be omitted. Valid examples:
+					
+				/oss_channel/global/AlarmChannel
+				/oss_channel/global/*
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="/([a-zA-Z])+_([a-zA-Z0-9])+(_ext)?/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/[0-9a-zA-Z_\.]+)?"/> <!-- /oss_eventtype/FM/AlarmEvent/1.2.0 -->
+			<pattern value="/([a-zA-Z])+_([a-zA-Z0-9])+(_ext)?/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*(/\*)?"/>              <!-- /oss_eventtype/FM/AlarmEvent/* -->
+			<pattern value="/([a-zA-Z])+_([a-zA-Z0-9])+(_ext)?/(%[a-fA-F0-9][a-fA-F0-9]|[0-9\-\._])*[a-zA-Z0-9]([a-zA-Z0-9_\-\.]|%[a-fA-F0-9][a-fA-F0-9])*/\*(/\*)?"/>                                       <!-- /oss_eventtype/FM/*/* -->
+			<pattern value="/([a-zA-Z])+_([a-zA-Z0-9])+(_ext)?/\*/\*(/\*)?"/>                                                                <!-- /oss_eventtype/*/*/* -->
+			<pattern value="/\*/\*/\*/\*"/>                                                                                               <!-- /*/*/*/* -->
+		</restriction>
+	</simpleType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                     Value types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="abstractValue">
+		<annotation>
+			<documentation>The AbstractValue is the base type for all literal values encoded inside models.
+				Conceptually there is a difference between modeling data types (see abstractType) and values; this
+				here deals with values. It allows to specify actual literal values in XML. A good example are default
+				values for attributes: These are literals. 
+			</documentation>
+		</annotation>
+	</complexType>
+	
+	<complexType name="booleanValue">
+		<annotation>
+			<documentation>Defines a literal boolean value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="boolean" use="optional">
+					<annotation>
+						<documentation>The boolean value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="stringValue">
+		<annotation>
+			<documentation>Defines a literal string value. The string value will be directly encoded as part of the
+				attribute, meaning that it is not possible to use CDATA to use pre-formatted text.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="string" use="optional">
+					<annotation>
+						<documentation>The string value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="textValue">
+		<annotation>
+			<documentation>Defines a literal text value. The difference to stringLiteralValue is that this element here
+				allows formatted text with the help of the CDATA construct.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="value" type="string">
+						<annotation>
+							<documentation>The text value. Use a CDATA construct to supply pre-formatted text. If
+								omitted, denotes a null value.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="byteValue">
+		<annotation>
+			<documentation>Defines a literal integer (8-bit) value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="byte" use="optional">
+					<annotation>
+						<documentation>The byte value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="shortValue">
+		<annotation>
+			<documentation>Defines a literal integer (16-bit) value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="short" use="optional">	
+					<annotation>
+						<documentation>The short value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="integerValue">
+		<annotation>
+			<documentation>Defines a literal integer (32-bit) value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="int" use="optional">
+					<annotation>
+						<documentation>The integer value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="longValue">
+		<annotation>
+			<documentation>Defines a literal integer (64-bit) value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="long" use="optional">
+					<annotation>
+						<documentation>The long value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="doubleValue">
+		<annotation>
+			<documentation>Defines a literal floating-point (64-bit) value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<attribute name="value" type="double" use="optional">
+					<annotation>
+						<documentation>The double value. If omitted, denotes the null value.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="collectionValue">
+		<annotation>
+			<documentation>Defines a literal collection value. Contains zero to n values. The order of the values within
+			 this element may be important, e.g. if the collection is ordered (a List, perhaps).
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="values">
+						<annotation>
+							<documentation>This outer element is necessary to be able to distinguish between am empty
+								collection value (a collection having zero members), and null. 
+							</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element maxOccurs="unbounded" minOccurs="0" name="value" type="oss_common:abstractValue">
+									<annotation>
+										<documentation>Zero to n values. If omitted, denotes an empty collection
+											(not null).
+										</documentation>
+									</annotation>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mapValue">
+		<annotation>
+			<documentation>Defines a literal map value. Contains zero to n key/value pairs.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractValue">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="mapEntries">
+						<annotation>
+							<documentation>This outer element is necessary to be able to distinguish between am empty
+								map value (a map having zero members), and null. 
+							</documentation>
+						</annotation>
+						<complexType>
+							<sequence>
+								<element maxOccurs="unbounded" minOccurs="0" name="mapEntry" type="oss_common:mapValueEntry">
+									<annotation>
+										<documentation>Zero to n key/value pairs. If omitted, denotes an empty map
+											(not null).
+										</documentation>
+									</annotation>
+								</element>
+							</sequence>
+						</complexType>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="mapValueEntry">
+		<annotation>
+			<documentation>Defines an entry in a literal map value.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="key" type="oss_common:abstractValue">
+				<annotation>
+					<documentation>The value of a map key. If omitted, denotes that the key is null.
+					</documentation>
+				</annotation>
+			</element>
+			<element maxOccurs="1" minOccurs="0" name="value" type="oss_common:abstractValue">
+				<annotation>
+					<documentation>The value of a map entry. If omitted, denotes that the value is null.
+					</documentation>
+				</annotation>
+			</element>
+		</sequence>
+	</complexType>
+	
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                    Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="abstractDataType">
+		<annotation>
+			<documentation>The AbstractDataType is the base type from which all other data types inherit. It support
+				a single constraint, which is the not-null constraint.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" ref="oss_common:notNullConstraint"/>
+		</sequence>
+	</complexType>
+
+	<complexType abstract="true" name="abstractSingleDataType">
+		<annotation>
+			<documentation>The AbstractSingleDataType is the base type for all non-collection data types.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType abstract="true" name="abstractPrimitiveDataType">
+		<annotation>
+			<documentation>The AbstractPrimitiveDataType is the base type for all "primitive" data types.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType"/>
+		</complexContent>
+	</complexType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                             Union Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType name="unionType">
+		<annotation>
+			<documentation>The union type allows for a single attribute to have values of non-collection data type. At runtime,
+				the data type for the attribute is implicitly decided on by the data. The value of the data is matched against
+				the members of the union, and the first data type that matches is chosen.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="2" name="member" type="oss_common:abstractSingleDataType">
+						<annotation>
+							<documentation>Ordered sequence of members, denoting the possible data types for this union type.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                             Primitive Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType name="booleanType">
+		<annotation>
+			<documentation>Boolean data type. May have a default value.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveDataType">
+				<attribute name="empty" type="boolean" use="optional">
+					<annotation>
+						<documentation>Denotes that empty semantics should apply for this
+							boolean type.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="stringType">
+		<annotation>
+			<documentation>String type. Allows for string-related constraints. May have a default value; if specified,
+				must adhere to any constraints defined.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveDataType">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="stringLengthConstraint" type="oss_common:stringLengthConstraint">
+						<annotation>
+							<documentation>Optionally constraints the allowed size of the string.
+							</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="1" minOccurs="0" name="stringContentsConstraint" type="oss_common:stringContentsConstraint">
+						<annotation>
+							<documentation>Optionally constraints the contents of a string. 
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType abstract="true" name="abstractPrimitiveNumericDataType">
+		<annotation>
+			<documentation>The AbstractPrimitiveNumericDataType is the base type for all "primitive" non-float data
+				types. It supports value constraints, limiting the numeric values that the using element may assign. 
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveDataType">
+				<sequence>
+					<group ref="oss_common:valueConstraintsGroup"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="byteType">
+		<annotation>
+			<documentation>8-bit signed integer (value range 127 to -128). May have a default value; if specified,
+				must adhere to any constraints defined.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveNumericDataType"/>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="shortType">
+		<annotation>
+			<documentation>16-bit signed integer (value range 32767 to -32768). May have a default value; if specified,
+				must adhere to any constraints defined.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveNumericDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="integerType">
+		<annotation>
+			<documentation>32-bit signed integer (value range 2114125312 to	-2114125313). May have a default value; if
+				specified, must adhere to any constraints defined.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveNumericDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="longType">
+		<annotation>
+			<documentation>64-bit integer. Usually signed; however, if the "unsigned" attribute is set should be
+				considered unsigned.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveNumericDataType">
+				<attribute default="false" name="unsigned" type="boolean" use="optional">
+					<annotation>
+						<documentation>If true, denotes that the long type is unsigned.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="doubleType">
+		<annotation>
+			<documentation>64-bit double-precision real number (11 bits exponent, 52 bits significand). May have a
+				default value; if specified, must adhere to any constraints defined.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractPrimitiveDataType">
+				<sequence>
+					<group ref="oss_common:doubleValueConstraintsGroup"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                             Single Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType name="timestampType">
+		<annotation>
+			<documentation>Timestamp type. The unit of measurement is milliseconds since the Epoch (1.1.1970). No
+				support for time zone or daylight saving, therefore should be considered to represent Universal Time
+				Coordinated (UTC) time.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="dateType">
+		<annotation>
+			<documentation>Time/Date type. Support for millisecond precision, time zone and daylight saving.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="objectType">
+		<annotation>
+			<documentation>The ObjectDataType is a generic type that may be used to model attributes whose types is
+				not known at design time. In general, usage of this type should be avoided as much as possible as it
+				prevents a number of modeling functions at runtime, such as checking for type-safety etc. Likewise,
+				considerations may be given to object serialization issues, depending on how/where the attribute is
+				being used. 
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType"/>
+		</complexContent>
+	</complexType>
+	
+	<complexType name="ipAddressType">
+		<annotation>
+			<documentation>IP Address type. Only string representations of an IP Address are supported, integer representations
+				are not supported.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType">
+				<choice>
+					<element maxOccurs="1" minOccurs="0" ref="oss_common:ipv4AddressConstraint">
+						<annotation>
+							<documentation>Denotes an IPv4 address.
+							</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="1" minOccurs="0" ref="oss_common:ipv6AddressConstraint">
+						<annotation>
+							<documentation>Denotes an IPv6 address.
+							</documentation>
+						</annotation>
+					</element>
+				</choice>
+			</extension>
+		</complexContent>
+	</complexType>
+	
+	
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                          Collection Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="abstractCollectionDataType">
+		<annotation>
+			<documentation>The AbstractCollectionDataType is the base type for all collection types. It supports the
+				definition of the collection-member data type (which may only be of single data type, i.e. no
+				collection-inside-collection). It also supports collection-related constraints, and the default values
+				for the collection, if any.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractDataType">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" name="collectionSizeConstraint" type="oss_common:collectionSizeConstraint">
+						<annotation>
+							<documentation>Optionally constraints the allowed size of the collection.
+							</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="1" minOccurs="0" ref="oss_common:collectionUniquenessConstraint">
+						<annotation>
+							<documentation>Optionally constraints the members of the collection to be unique. This
+								results in the collection having Set-semantics.
+							</documentation>
+						</annotation>
+					</element>
+					<element maxOccurs="1" minOccurs="1" name="collectionValuesType" type="oss_common:abstractSingleDataType">
+						<annotation>
+							<documentation>This is the data type of the collection members. If this is not known, it
+								should be set to the ObjectDataType.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="collectionType">
+		<annotation>
+			<documentation>Collection type. Implies that the order of the elements within the collection is not of
+				importance. Default values are supported; if supplied, their type must match the type of the members of
+				the collection. Elements within the collection may exist more than once; a uniqueness constraint may be
+				specified, in which case the semantics of a Set are achieved. As the members of a collection are by
+				definition unordered, does not support an ordering constraint.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractCollectionDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="listType">
+		<annotation>
+			<documentation>List type. Implies that the members of the list are in an order that	is significant to the
+				processing of the members. This order may be a natural order or a usage-specific order (note the
+				optional ordering constraint can only verify natural ordering). Default values are supported; if
+				supplied, their type must match the type of the members of the collection. Elements within the
+				collection may exist more than once; a uniqueness constraint may be specified, however.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:collectionType">
+				<sequence>
+					<element maxOccurs="1" minOccurs="0" ref="oss_common:collectionOrderingConstraint"/>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="mapType">
+		<annotation>
+			<documentation>Map type. Normal key/value paradigm. Default values for both keys and values are supported;
+				if used, their respective type must match the collection key and value types and there must be the
+				same number of default values for both keys and values. By nature, the keys of a Map data type must
+				be unique.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractCollectionDataType">
+				<sequence>
+					<element maxOccurs="1" minOccurs="1" name="keyValuesType" type="oss_common:abstractSingleDataType">
+						<annotation>
+							<documentation>This is the data type of the Map keys.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                          Reference Data types
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType abstract="true" name="abstractReferenceDataType">
+		<annotation>
+			<documentation>The AbstractReferenceDataType is the base type for all data types that refer to other types,
+				defined as part of other models.
+		</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractSingleDataType"/>
+		</complexContent>
+	</complexType>
+
+	<complexType name="complexRefType">
+		<annotation>
+			<documentation>The ComplexRefType is used to refer to an instance of a CDT. The model type of the
+				modelUrn is implied to be OSS_CDT.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractReferenceDataType">
+				<attribute name="modelUrn" type="oss_common:exactImpliedVersionedUrnType" use="required">
+					<annotation>
+						<documentation>The URN of the model referred to. The URN is an implied URN to a model of
+							type oss_cdt. The version must be specified and may not be wildcarded.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="enumRefType">
+		<annotation>
+			<documentation>The EnumRefDataType is used to refer to an instance of an EDT. If it has a default value,
+				the value must be one of the members of the enumeration referred-to (or a possible parent-EDT).
+				The model type of the modelUrn is implied to be OSS_EDT.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractReferenceDataType">
+				<attribute name="modelUrn" type="oss_common:exactImpliedVersionedUrnType" use="required">
+					<annotation>
+						<documentation>The URN of the model referred to. The URN is an implied URN to a model of
+							type oss_edt. The version must be specified and may not be wildcarded.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="moRefType">
+		<annotation>
+			<documentation>Reference to a highly-typed DPS Primary Type model, or alternatively to the generic ManagedObject type;
+			 expressed as implied URN with the schema name being dps_primarytype. The realization of attributes of this type are 
+			 FDNs (Fully Distinguished Names: strings containing comma-separated name/value pairs). This data type has been added
+			 to explicitly distinguish it from normal strings.
+			 
+			 It is possible to reference the generic ManagedObject data type by using the implied URN "//global/ManagedObject/*". 
+			 This is typically used for FDN attributes where the exact ManagedObject type is not known at design time, or where 
+			 the FDN can be of different ManagedObject types.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractReferenceDataType">
+				<sequence>
+					<element maxOccurs="unbounded" minOccurs="0" name="moTypeConstraint" type="oss_common:referenceEndpointConstraint">
+						<annotation>
+							<documentation>An optional constraint that further constraints the types of managed 
+								objects that are allowable. Existence of this element only ever makes sense if the
+								reference is to "any" Managed Object type, as encoded by the URNs shown above.
+								The semantics of multiple instances of this element are such that the moRef must point
+								to a managed object of a type of _any_ of the managed object types referenced.
+								Where the reference is not to "any" Managed Object type, this constraint is
+								ignored, as it makes no sense.
+							</documentation>
+						</annotation>
+					</element>
+				</sequence>
+				<attribute name="modelUrn" type="oss_common:anyVersionImpliedUrnType" use="required">
+					<annotation>
+						<documentation>The URN of the model referred to. The URN is an implied URN to a model of
+							type dps_primarytype. The version may be wildcarded.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+	<complexType name="genericRefType">
+		<annotation>
+			<documentation>A reference to a model of any type. The GenericRefDataType may be used to denote that an
+				attribute is of a type not covered by any of the above; hence, the model type name must be supplied
+				as well. In general, usage of this type should be avoided, as it makes it more difficult to
+				automatically process dependencies between models; however, for some model types is may be appropriate
+				to use this type, especially when it is not known upfront what the type of models is referred-to. The
+				model type of the modelUrn is not implied and must be supplied.
+			</documentation>
+		</annotation>
+		<complexContent>
+			<extension base="oss_common:abstractReferenceDataType">
+				<attribute name="modelUrn" type="oss_common:exactFullUrnType" use="required">
+					<annotation>
+						<documentation>The URN of the model referred to. The URN is a full URN and must hence include
+							the model type name.
+						</documentation>
+					</annotation>
+				</attribute>
+			</extension>
+		</complexContent>
+	</complexType>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                    Constraints
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<group name="valueConstraintsGroup">
+		<annotation>
+			<documentation>Constraints relating to non-floating point types only (that is, any types representing numbers n
+				with n element-of Z). Constraints may be put on minimum and maximum values and on the resolution.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="valueRangeConstraint" type="oss_common:valueRangeConstraint"/>
+			<element maxOccurs="1" minOccurs="0" name="valueResolutionConstraint" type="oss_common:valueResolutionConstraint"/>
+		</sequence>
+	</group>
+
+	<group name="doubleValueConstraintsGroup">
+		<annotation>
+			<documentation>Constraints relating to real-number-types only (that is, any types representing numbers n
+				with n element-of R). Constraints may be put on minimum and maximum values and on the resolution.
+			</documentation>
+		</annotation>
+		<sequence>
+			<element maxOccurs="1" minOccurs="0" name="valueRangeConstraint" type="oss_common:doubleValueRangeConstraint"/>
+			<element maxOccurs="1" minOccurs="0" name="valueResolutionConstraint" type="oss_common:doubleValueResolutionConstraint"/>
+		</sequence>
+	</group>
+
+	<element name="notNullConstraint">
+		<annotation>
+			<documentation>Constraint to denote that the value of the attribute cannot be null. Note that a clear
+				distinction is made between a NULL value and zero, empty string, or empty collection (all of which are
+				non-null values). A distinction is made for collections is relation to whether the collection itself
+				may be null, and whether the members of the collection may be null.
+			</documentation>
+		</annotation>
+		<complexType/>
+	</element>
+
+	<complexType name="valueRangeConstraint">
+		<annotation>
+			<documentation>Constraint to denote min or max or both (or sequence-thereof) for non-float values.
+			</documentation>
+		</annotation>
+		<choice>
+			<element maxOccurs="1" minOccurs="1" name="maxValue" type="oss_common:minMaxValue"/>
+			<element maxOccurs="1" minOccurs="1" name="minValue" type="oss_common:minMaxValue"/>
+			<element maxOccurs="unbounded" minOccurs="1" name="minMaxRange" type="oss_common:minMaxRange"/>
+		</choice>
+	</complexType>
+
+	<complexType name="valueResolutionConstraint">
+		<annotation>
+			<documentation>Constraint to denote the resolution for non-floating point types. The resolution limits the
+				allowable values within a (possibly infinite) range of values. Example: A resolution of 3 allows the
+				following values: 0, 3, -3, 6, -6, 9 and so on. It may also be used in combination with max/min values.
+				Example: A resolution of 3 and min/max values of 10 and 19 respectively allows the following
+				values: 10, 13, 16, 19.
+			</documentation>
+		</annotation>
+		<attribute name="value" type="long" use="required"/>
+	</complexType>
+
+	<complexType name="doubleValueRangeConstraint">
+		<annotation>
+			<documentation>Constraint to denote min or max or both (or sequence-thereof) for real values.
+			</documentation>
+		</annotation>
+		<choice>
+			<element maxOccurs="1" minOccurs="1" name="maxValue" type="oss_common:doubleMinMaxValue"/>
+			<element maxOccurs="1" minOccurs="1" name="minValue" type="oss_common:doubleMinMaxValue"/>
+			<element maxOccurs="unbounded" minOccurs="1" name="minMaxRange" type="oss_common:doubleMinMaxRange"/>
+		</choice>
+	</complexType>
+
+	<complexType name="doubleValueResolutionConstraint">
+		<annotation>
+			<documentation>Constraint to denote the resolution for real-number-like types. The resolution limits the
+				allowable values within a (possibly infinite) range of values. Example: A resolution of 0.1 allows the
+				following values: 0, 0.1, -0.1, 0.2, -0.2 and so on. It may also be used in combination with max/min
+				values. Example: A resolution of 0.1 and min/max values of 2.5 and 2.8 respectively allows the
+				following values: 2.5, 2.6, 2.7, 2.8.
+			</documentation>
+		</annotation>
+		<attribute name="value" use="required">
+			<simpleType>
+				<restriction base="double">
+					<minInclusive value="0.000001"/>
+				</restriction>
+			</simpleType>
+		</attribute>
+	</complexType>
+
+	<complexType name="stringContentsConstraint">
+		<annotation>
+			<documentation>Constraints to denote the allowable content of a string. The type denotes how to
+				interpret the value.
+			</documentation>
+		</annotation>
+		<attribute name="type" type="oss_common:stringContentsConstraintType" use="required">
+			<annotation>
+				<documentation>The type of the constraint.
+				</documentation>
+			</annotation>
+		</attribute>
+		<attribute name="value" type="string" use="required">
+			<annotation>
+				<documentation>The value of the constraint depends on the type.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<simpleType final="#all" name="stringContentsConstraintType">
+		<annotation>
+			<documentation>Denotes the type of a string contents constraint.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="REGEX">
+				<annotation>
+					<documentation>A regular expression denoting the pattern that the string must follow.
+						The pattern must be in the format as specified by the Java Pattern type.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="BUILTIN">
+				<annotation>
+					<documentation>A pre-defined format, that is commonly used but which is difficult
+						or expensive to evaluate through the use of a regular expression. The following
+						values are currently supported: "ipV4Address", "ipV6Address", "ipAddress".
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="stringLengthConstraint">
+		<annotation>
+			<documentation>Constraint to denote the min/max or both or sequence-thereof length of a string.
+			</documentation>
+		</annotation>
+		<choice>
+			<element maxOccurs="1" minOccurs="1" name="maxLength" type="oss_common:minMaxValue"/>
+			<element maxOccurs="1" minOccurs="1" name="minLength" type="oss_common:minMaxValue"/>
+			<element maxOccurs="unbounded" minOccurs="1" name="minMaxLength" type="oss_common:minMaxRange"/>
+		</choice>
+	</complexType>
+
+	<complexType name="collectionSizeConstraint">
+		<annotation>
+			<documentation>Constraint to denote the min/max or both or sequence-thereof size of a collection.
+			</documentation>
+		</annotation>
+		<choice>
+			<element maxOccurs="1" minOccurs="1" name="maxSize" type="oss_common:minMaxValue"/>
+			<element maxOccurs="1" minOccurs="1" name="minSize" type="oss_common:minMaxValue"/>
+			<element maxOccurs="unbounded" minOccurs="1" name="minMaxSize" type="oss_common:minMaxRange"/>
+		</choice>
+	</complexType>
+	
+	<element name="ipv4AddressConstraint">
+		<annotation>
+			<documentation>Constraint to denote an IP address must adhere to IPv4 address syntax.
+			</documentation>
+		</annotation>
+		<complexType/>
+	</element>
+	
+	<element name="ipv6AddressConstraint">
+		<annotation>
+			<documentation>Constraint to denote an IP address must adhere to IPv6 address syntax.
+			</documentation>
+		</annotation>
+		<complexType/>
+	</element>
+
+	<element name="collectionOrderingConstraint">
+		<annotation>
+			<documentation>Constraint to denote that the contents of a collection must be in natural order. The way how
+				the order is established depends very much on the data type of the members of the collection. For
+				primitive types this is straightforward; for complex data types, the "key" of the CDT is used. Where a 
+				CDT does not have a “key” attribute, two elements of the collection are considered to be non-unique if 
+				the values of all the attributes in one element are the same as the values of the same attributes in 
+				the other element. Note that natural ordering is very much different from a use-case specific ordering. 
+				Consider as example a collection of user identities. A natural order might be to order them 
+				alphabetically. A use-case specific ordering may be to order them by the time they logged on to the 
+				system. The latter cannot be automatically established, whereas	natural ordering can be easily done 
+				and verified.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="value" type="oss_common:orderDirection" use="required">
+				<annotation>
+					<documentation>The direction of the order.
+					</documentation>
+				</annotation>
+			</attribute>
+			<!-- At present the natural ordering of enums is not defined: By numeric value or string value? This may
+				have to be added in the future as additional attribute to this element. -->
+		</complexType>
+	</element>
+
+	<element name="collectionUniquenessConstraint">
+		<annotation>
+			<documentation>Constraint to denote that all elements within a collection must be unique. The way how
+				uniqueness is established depends very much on the data type of the members of the collection. For
+				primitive types this is straightforward; for complex data types, the "key" of the CDT is used. 
+				Where a CDT does not have a “key” attribute, two elements of the collection are considered to be 
+				non-unique if the values of all the attributes in one element are the same as the values of the 
+				same attributes in the other element.
+			</documentation>
+		</annotation>
+		<complexType/>
+	</element>
+
+	<simpleType final="#all" name="orderDirection">
+		<annotation>
+			<documentation>Denotes an order direction. Should be self-explanatory.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="ASCENDING">
+			</enumeration>
+			<enumeration value="DESCENDING">
+			</enumeration>
+		</restriction>
+	</simpleType>
+
+	<complexType name="referenceEndpointConstraint">
+		<annotation>
+			<documentation>An constraint that further constraints the types of persistent objects that are allowable as
+				to-side of a reference-type attribute. This constraint is typically used where the to-side of a
+				reference-type attribute is "any" Managed Object or Persistence Object type.
+				The semantics of multiple instances of this constraint are such that the reference-type attribute must
+				point to a persistent object of a type of _any_ of the primary types referenced.
+				Where a reference is not to "any" Managed Object or Persistence Object type, this constraint is ignored,
+				as it makes no sense.
+			</documentation>
+		</annotation>
+		<attribute name="primaryTypeUrn" type="oss_common:anyVersionImpliedUrnType" use="required">
+			<annotation>
+				<documentation>The (implied) URN of the Primary Type, an instance of which must be pointed at
+					by the reference.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+
+	<element name="requiresConfigurationParameter">
+		<annotation>
+			<documentation>An element that denotes a condition on a configuration parameter, identified by namespace
+				and name. The value of the element must be convertible from String to the actual data type of the
+				configuration parameter.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="ns" type="oss_common:namespaceInformationType" use="required"/>
+			<attribute name="name" type="oss_common:nameInformationType" use="required"/>
+			<attribute name="value" type="string" use="required"/>
+		</complexType>
+	</element>
+
+	<element name="requiresLicense">
+		<annotation>
+			<documentation>An element that denotes a license must be in place.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="licenseKeyId" type="oss_common:nameInformationType" use="required"/>
+		</complexType>
+	</element>
+	<element name="requiresTargetType">
+		<annotation>
+			<documentation>An element that denotes that a construct only applies to a given target type
+				(in a target category).
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="category" type="oss_common:nameInformationType" use="required"/>
+			<attribute name="type" type="oss_common:nameInformationType" use="required"/>
+		</complexType>
+	</element>	
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                               Range helper elements
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<complexType name="minMaxRange">
+		<annotation>
+			<documentation>A minimum/maximum range that can be used for a variety of purposes.
+			</documentation>
+		</annotation>
+		<attribute name="min" type="long" use="required"/>
+		<attribute name="max" type="long" use="required"/>
+	</complexType>
+
+	<complexType name="minMaxValue">
+		<annotation>
+			<documentation>An minimum/maximum value that can be used for a variety of purposes.
+			</documentation>
+		</annotation>
+		<attribute name="value" type="long" use="required"/>
+	</complexType>
+
+	<complexType name="doubleMinMaxRange">
+		<annotation>
+			<documentation>A minimum/maximum range that can be used for a variety of purposes.
+			</documentation>
+		</annotation>
+		<attribute name="min" type="double" use="required"/>
+		<attribute name="max" type="double" use="required"/>
+	</complexType>
+
+	<complexType name="doubleMinMaxValue">
+		<annotation>
+			<documentation>An minimum/maximum value that can be used for a variety of purposes.
+			</documentation>
+		</annotation>
+		<attribute name="value" type="double" use="required"/>
+	</complexType>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                                  Supporting Types etc.
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+
+	<attribute name="modelType" type="oss_common:modelTypeInformationType">
+		<annotation>
+			<documentation>The model type of a model.
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="modelTypeInformationType">
+		<annotation>
+			<documentation>The model type of a model. Must be all lowercase, with an underscore '_' in between. Model
+				types used for model extensions may optionally have _ext at the end.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="([a-zA-Z])+_([a-zA-Z0-9])+(_ext)?"/>
+		</restriction>
+	</simpleType>
+
+	<attribute name="ns" type="oss_common:namespaceInformationType">
+		<annotation>
+			<documentation>The namespace of a model. How exactly the namespace looks like depends on each model
+				type.
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="namespaceInformationType">
+		<annotation>
+			<documentation>The namespace of a model. Can start and end with any of the allowed character set; must have at least
+			one alphanumeric character. The recommended character set to use is [0-9A-Za-z._-]. An expanded character set is supported
+                        in some limited circumstances. Characters outside the range ASCII 33 to 126 (both inclusive) and ASCII characters 34 and 96
+			are never permitted.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="([!#-_a-~])*[a-zA-Z0-9]([!#-_a-~])*"/>
+		</restriction>
+	</simpleType>
+
+	<attribute name="name" type="oss_common:nameInformationType">
+		<annotation>
+			<documentation>The name of a model or a modeled entity (for example, an attribute). Certain constraints
+				apply in relation to the characters allowed within a name.
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="nameInformationType">
+		<annotation>
+			<documentation>The name of a model. Can start and end with any of the allowed character set; must have at least
+			one alphanumeric character. The recommended character set to use is [0-9A-Za-z._-]. An expanded character set is supported
+                        in some limited circumstances. Characters outside the range ASCII 33 to 126 (both inclusive) and ASCII characters 34 and 96
+			are never permitted.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="([!#-_a-~])*[a-zA-Z0-9]([!#-_a-~])*"/>
+		</restriction>
+	</simpleType>
+
+	<attribute name="version" type="oss_common:versionInformationType">
+		<annotation>
+			<documentation>The version of a model in x.y.z format (a fourth digit is allowed to
+				cater for EC packages).
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="versionInformationType">
+		<annotation>
+			<documentation>The version of a model. Must be in x.y.z or x.y.z.ec format.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="[0-9]+\.[0-9]+\.[0-9]+(\.[0-9]+)?"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="descriptionType">
+		<annotation>
+			<documentation>A human-readable description of the modeled entity. Effort should be made to document the
+				entity in a proper fashion, as end-user documentation will be created from the description.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<minLength value="1"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="uriType">
+		<annotation>
+			<documentation>Denoting a URI type.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value=".+"/>
+		</restriction>
+	</simpleType>
+
+	<simpleType final="#all" name="javaClassNameType">
+		<annotation>
+			<documentation>The full name of a Java class. The Java specification allows letters from the Unicode range,
+				but we don't support these here (too complex and very unlikely to be needed). Likewise, the Java
+				specification allows for currency symbols to be used as part of identifiers; we will not allow this (bad
+				coding style).
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<pattern value="[a-zA-Z0-9_]+(\.[a-zA-Z0-9_]+)*"/>
+		</restriction>
+	</simpleType>
+
+	<attribute name="lifeCycle" type="oss_common:lifeCycleType">
+		<annotation>
+			<documentation>Denotes the life-cycle stage in which a modeled entity is. An entity will always start of as
+				preliminary or current, and may eventually transition to deprecated or obsolete. There are strict rules
+				in relation to how the life-cycle of entities can transition which will be enforced.
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="lifeCycleType">
+		<annotation>
+			<documentation>Denotes the life-cycle stage in which a modeled entity is. An entity will always start of as
+				preliminary or current, and may eventually transition to deprecated or obsolete. There are strict rules
+				in relation to how the life-cycle of entities can transition which will be enforced.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="PRELIMINARY">
+				<annotation>
+					<documentation>The entity is preliminary. As such, it is not released yet and can be considered
+						temporary. An entity marked as preliminary may only transition to "current" or "obsolete".
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="CURRENT">
+				<annotation>
+					<documentation>The entity is in normal use. It may only transition to "deprecated" or "obsolete",
+						although it is recommended that it will always transition to "deprecated" first to give users
+						of the modeled entity a grace period.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="DEPRECATED">
+				<annotation>
+					<documentation>The entity is deprecated. As such, it is still fully supported, but it will be
+						obsoleted in the future. An alternative to the usage of the deprecated entity should be sought
+						in time. A deprecated entity may only transition to "obsolete".
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="OBSOLETE">
+				<annotation>
+					<documentation>The entity is obsolete and as such not in use anymore. It should not be used and
+						its correct function must not be relied upon. Usage of obsoleted entities is considered a
+						fault. An obsoleted modeled entity can never be resurrected; if it's usage is required
+						then a new entity must be created.
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	
+	<attribute name="lifeCycleDesc" type="string">
+		<annotation>
+			<documentation>Human readable plain text that describes the lifecycle of an element. This may be used to
+				give additional information which may help a human reader how to handle the respective element.
+			</documentation>
+		</annotation>
+	</attribute>
+
+	<simpleType final="#all" name="inheritanceQualifier">
+		<annotation>
+			<documentation>Denotes the inheritance qualifier for a type. This is typically used to prevent an instance
+				of a type to be created; i.e., it must be sub-classed, or alternatively, to disallow a type from being
+				sub-typed.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="ABSTRACT">
+				<annotation>
+					<documentation>The type is abstract, meaning that it may not be instantiated. It must be
+					sub-classed in order for an instance of to be created (note modeling toolchain cannot enforce this,
+					it is up to the user's of the model to enforce this behavior).
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="FINAL">
+				<annotation>
+					<documentation>The type is final, meaning that it cannot be inherited-from. There must not exist
+						another type inheriting from this one.
+					</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	
+	<complexType name="tbacTarget">
+		<annotation>
+			<documentation>The purpose of tbacTarget element is to identify an attribute, part of a data structure, which contains target-identifying information. 
+			</documentation>
+		</annotation>
+		<attribute name="path" type="oss_common:nameInformationType" use="required">
+			<annotation>
+				<documentation>The path to the attribute that contains the target-identifying information. 
+				In its simplest form, this is simply the name of an attribute, part of a data structure. However,
+				the path can likewise contain a series of "steps" that an implementation must follow to eventually
+				arrive at the actual target-identifying information.
+
+				For example, such a "path" could be to follow a reference to a CDT and an attribute contained within.
+				</documentation>
+			</annotation>
+		</attribute>
+	</complexType>
+	
+	<attribute default="OSS" name="definedBy" type="oss_common:networkManagementDomainType">
+		<annotation>
+			<documentation>Denotes the network management domain in which an element is defined.
+			</documentation>
+		</annotation>
+	</attribute>
+	
+	<simpleType final="#all" name="networkManagementDomainType">
+		<annotation>
+			<documentation>An enumeration representing the different network management domains. Typically used where
+			it is necessary to identify elements defined/used/processed by the OSS (as opposed to the network and/or 
+			north-bound systems).
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="NE">
+				<annotation>
+					<documentation>Denotes a south-bound entity, which means a Network Element.</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="OSS">
+				<annotation>
+					<documentation>Denotes the OSS.
+					</documentation>
+				</annotation>
+			</enumeration>
+			<enumeration value="NB">
+				<annotation>
+					<documentation>Denotes a north-bound entity, which means an external system.
+ 				</documentation>
+				</annotation>
+			</enumeration>
+		</restriction>
+	</simpleType>
+	
+	<complexType name="hiddenType">
+		<annotation>
+			<documentation>Denotes that the element is hidden.
+			</documentation>
+		</annotation>
+	</complexType>
+	
+	<element name="auditTrailLogging">
+		<annotation>
+			<documentation>Denotes audit trail logging will be performed.
+			</documentation>
+		</annotation>
+		<complexType/>
+	</element>
+	
+	<simpleType name="userExposureType">
+		<annotation>
+			<documentation>Denotes how a model element shall be exposed to a user. Certain modeled elements may never
+				be exposed, as these are deemed "internal" to the system - other modeled elements may be selectively
+				exposed, or may always be exposed.
+			</documentation>
+		</annotation>
+		<restriction base="string">
+			<enumeration value="ALWAYS">
+				<annotation>
+					<documentation>The modeled element shall always be exposed to the user. This is the default value
+						for modeled elements. Implies read and write exposure.
+					</documentation>
+				</annotation>
+			</enumeration>		
+			<enumeration value="SELECTIVELY">
+				<annotation>
+					<documentation>The modeled element may be exposed to the user. The decision to expose is
+						configuration-driven, and may change during runtime of the system. Clients must consider
+						the runtime system configuration to determine how the modeled element shall be exposed.
+						Authorization may also be used to determine the level of exposure. Read and write exposure
+						may be configured separately. Implies NEVER, unless overridden by runtime system configuration.
+					</documentation>
+				</annotation>
+			</enumeration>		
+			<enumeration value="READ_ONLY">
+				<annotation>
+					<documentation>The modeled element shall always be exposed to the user, but only in a
+						read-only fashion. The onus is on the client to enforce this - the fact a modeled element
+						is exposed in a read-only fashion only relates to what the end user is allowed to do.
+					</documentation>
+				</annotation>
+			</enumeration>		
+			<enumeration value="NEVER">
+				<annotation>
+					<documentation>The modeled element shall never be exposed to the user. This shall be enforced by
+						the client by, for example, hiding the modeled elements and by not exposing the data thus hidden.
+					</documentation>
+				</annotation>
+			</enumeration>		
+		</restriction>
+	</simpleType>
+
+
+<!-- ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+                                             Model Creation Information
++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
+-->
+	
+	<element name="modelCreationInfo">
+		<annotation>
+			<documentation>Denotes information about the generation of the model, such as how and when the model was created.
+			</documentation>
+		</annotation>
+		<complexType>
+			<choice>
+				<element maxOccurs="1" minOccurs="1" ref="oss_common:derivedModel">
+					<annotation>
+						<documentation>Denotes that this model has been derived from another model.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" ref="oss_common:designedModel">
+					<annotation>
+						<documentation>Denotes that this model is the output of a design activity.
+						</documentation>
+					</annotation>
+				</element>
+				<element maxOccurs="1" minOccurs="1" ref="oss_common:userCreated">
+					<annotation>
+						<documentation>Denotes that this model has been created by a human user at runtime.
+						</documentation>
+					</annotation>
+				</element>
+			</choice>
+			<attribute name="creationDate" type="string" use="required">
+				<annotation>
+					<documentation>The creation date/time of the Model. For models that are derived from other models,
+						this should be set to the time when this derivation was done.</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="author" type="string" use="optional">
+				<annotation>
+					<documentation>Name of the person or tool creating the model.</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="designedModel">
+		<annotation>
+			<documentation>Denotes that this model is the output of a design activity, be that human or by a supporting
+				toolchain.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="componentId" type="string" use="required">
+				<annotation>
+					<documentation>Component identity owning the source.</documentation>
+				</annotation>
+			</attribute>
+			<attribute name="className" type="string" use="optional">
+				<annotation>
+					<documentation>Package and Class name of original source for tracebility purposes. For models that
+						have been manually created this may be omitted.
+					</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="derivedModel">
+		<annotation>
+			<documentation>This element is used to denote that the model has been automatically derived from another
+				model. This derivation step is typically (but not necessarily) done as part of the deployment of the
+				derived-from model.
+			</documentation>
+		</annotation>
+		<complexType>
+			<attribute name="derivedFrom" type="oss_common:exactFullUrnType" use="required">
+				<annotation>
+					<documentation>
+					</documentation>
+				</annotation>
+			</attribute>
+		</complexType>
+	</element>
+
+	<element name="userCreated">
+		<annotation>
+			<documentation>Denotes that this model has been created by a human user at runtime.
+			</documentation>
+		</annotation>
+	</element>
+
+</schema>

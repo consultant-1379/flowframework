@@ -1,0 +1,55 @@
+	------
+	Flow Framework - Event Handler Definition
+	------
+	
+
+How to configure templates in a flow
+
+    In some cases, it is possible that multiple steps or IO adapters have almost identical configuration. Then,
+	you can define a configuration template using <<attributeGroup>>, which encapsulates a set of common attributes.
+	It can be used in a flow descriptor only if flow engine supports it. EPS is an example flow engine.
+	See the example below about how to define and use configuration templates:
+	
+	<<NOTE:>> one <<step>> or <<input>>/<<output>> can only contains at most one <<attributeGroupRef>>.
+	
++-------------------------------+
+<!-- Define configuration templates using attributeGroup -->
+<attributeGroup name="commonHandlerConfig">
+	<attribute name="commonProperty1" value="value1" />
+	<attribute name="commonProperty2" value="value2" />
+	...
+</attributeGroup>
+
+<attributeGroup name="ioAdapterConfig">
+	<attribute name="adpaterProperty1" value="adapterValue1" />
+	...
+</attributeGroup>
+
+<!-- Use configuration templates -->
+<input name="inputAdapter">
+	<!-- Use the configuration template inside step -->
+	<attributeGroupRef groupName="ioAdapterConfig" />
+	<!-- Customized attributes can also be defined as below -->
+	<attribute name="inputProperty1" value="inputValue1" />
+	...
+</input>
+
+<input name="outputAdapter">
+	<!-- Use the configuration template inside step -->
+	<attributeGroupRef groupName="ioAdapterConfig" />
+	<!-- Customized attributes can also be defined as below -->
+	<attribute name="outputProperty1" value="outputValue1" />
+	...
+</input>
+
+<step name="testHandler">
+	<handler>
+		<className>com.ericsson.oss.services.examples.Foo</className>
+	</handler>
+	<!-- Use the configuration template inside step -->
+	<attributeGroupRef groupName="commonHandlerConfig" />
+	<!-- Customized attributes can also be defined as below -->
+	<attribute name="sProperty" value="sValue" />
+	...
+</step>
++-------------------------------+	

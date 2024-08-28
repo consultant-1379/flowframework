@@ -1,0 +1,26 @@
+	------
+	Flow Descriptor - Flow Descriptor
+	------ 
+
+Basic Module Information
+
+	Basic module Information should be declared at the top of the xml file including <<namespace>> (attribute <ns>), 
+	<<name>>, <<version>>, <<author>>, <<creationDate>>, <<componentId>> and <<description>> (attribute <desc>). See example below.
+
+	<<Note:>> Each module must have an unique identifier which is a combination of <<namespace>>, <<name>> and <<version>>.
+
++-------------------------------+
+<<FlowDefinition xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow"
+    xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    oc:ns="com.test1" oc:name="test_multiple_subscribers" oc:version="1.1.0">
+    <oc:modelCreationInfo author="author"
+        creationDate="today">
+        <oc:designedModel componentId="someComponentId" />
+    </oc:modelCreationInfo>
+    <oc:desc>Example  flows</oc:desc>
+
+</FlowDefinition>
++-------------------------------+
+
+	

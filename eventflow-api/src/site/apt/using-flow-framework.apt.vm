@@ -1,0 +1,78 @@
+	------
+	Flow Framework - EventFlow API - How To Use
+	------
+	
+How to use?
+
+	Use as normal Maven dependency and build your own event handlers.
+	
+	<<NOTE:>> Always check if there is already {{{./reusable_event_handlers.html}existing event handler}} doing the same work.
+	
++-----+	
+<dependency>
+  <groupId>com.ericsson.component.aia.itpf.common.flow</groupId>
+  <artifactId>eventflow-api</artifactId>
+  <!-- change version to the latest one available -->
+  <version>${project.version}</version>
+</dependency>
++-----+
+
+Creating Event Handlers
+
+	You can create your own Event Handlers using EventFlow API. The following rules must be followed:
+
+	[[1]] Event handlers must be written in a thread-safe way
+
+	[[2]] It is recommended to extend the {{{./apidocs/com/ericsson/oss/itpf/common/event/handler/AbstractEventHandler.html} AbstractEventHandler}} class 
+	instead of simply implementing {{{./apidocs/com/ericsson/oss/itpf/common/event/handler/EventHandler.html} EventHandler}} interface
+	
+	[[3]] AbstractEventHandler contains a EventHandlerContext which defines customized configuration. The configuration 
+	attributes can be accessed using getConfiguration() method of AbstractEventHandler. 
+	
+	[]
+	
+	<<Example>>
+	
++-----+
+/**
+ * The SampleEventHandler extends the AbstractEventHandler class and implements the EventInputHandler interface 
+ * in order to process the events received from upstream and send downstream
+ */
+public class SampleEventHandler extends AbstractEventHandler implements EventInputHandler {
+
+	// Customized configuration attribute can be defined if necessary
+	private String sampleAttribute;
+	
+	// A name should be provided for the attribute, it is used as the key in configuration
+	private static final String SAMPLE_CONFIG_ATTRIBUTE_NAME = "attributeName";
+
+	// Method inherited from AbstractEventHandler
+	@Override
+	protected void doInit() {
+		// Invoked only once during initialization but before any event processing
+		
+		// The attribute values can be obtained using getConfiguration method
+		sampleAttribute = getConfiguration().getStringProperty(SAMPLE_CONFIG_ATTRIBUTE_NAME);
+	}
+
+	// Method inherited from AbstractEventHandler
+	@Override
+	public void destroy() {
+		// Invoked before instance is destroyed
+	}
+	
+	// Method inherited from AbstractEventHandler
+	@Override
+	public void onEvent(final Object event) {
+		// Processing the received event
+		Object newEvent = processingEvent(event);
+		// Sending the processed event downstream to its subscribers
+		sendToAllSubscribers(newEvent);
+	}
+
+	private Object processingEvent(final Object event) {
+		// Processing the received event, and return the result as a new event
+	}
+
+}
++-----+	

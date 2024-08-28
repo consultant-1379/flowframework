@@ -1,0 +1,34 @@
+	------
+	Flow Framework - Event Handler Definition
+	------
+	
+
+How to clone steps in a flow
+
+    In some event flows, you may need to define multiple event handler instances of the same class and from exactly the same configuration.
+	In this case, to prevent copying a <<step>> many times, you can use <<clonedStep>> to created a cloned instance from a normal <<step>> instance.
+	You can have as many <<clonedStep>> nodes as you want depends on event flow logic. 
+	
+	The <<clonedStep>> node contains two attributes: <<name>> is the step name of the clonedStep; <<clonedStepRef>> is the name of a normal <<step>>
+	node from which this clonedStep is cloned. It can be used in a flow descriptor only if flow engine supports it. EPS is an example flow engine.
+	This is an example specific to Event Processing Service flow engine.
+
++-------------------------------+
+<!-- This is a normal step node of an event handler instance -->
+<step name="csFilterA">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="configuration.file.path" value="classpath:/config/esper-test-config.xml" />
+
+	<rule name="epl02-rule">
+		<inputPort name="inputStream1" />
+		<outputPort name="outputStream1" />
+		<ruleResource uri="classpath:/epl/rules_02.epl" />
+	</rule>
+</step>
+
+<!-- The following are two clonedStep nodes cloned from csFilterA -->
+<clonedStep name="csFilterB" clonedStepRef="csFilterA" />
+<clonedStep name="csFilterC" clonedStepRef="csFilterA" />
++-------------------------------+	  

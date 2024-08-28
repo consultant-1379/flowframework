@@ -1,0 +1,30 @@
+	------
+	IO Adapters
+	------
+	
+	Flow Framework defines the IO Adapter interfaces. Input adapters act as source of data into the flow. They are always the first step in the flow. Output adapters are 
+	final step in the flow and their responsibility is to send data outside the flow. In case when flow does not produce any output then there is no need for output adapter 
+	to exist as a step in the flow. IO adapters must be thread-safe, they must enable multi-threaded execution and must be performant.
+	Every flow can have multiple inputs and multiple outputs. 
+	
+Purpose of IO Adapters
+
+	The purpose of IO adapters is to send and receive events from remote processes. It enables developers to decouple processing
+	logic from IO adapters used. It is possible to switch from one messaging infrastructure to different one without even touching processing steps in the flow.
+	
+	Input adapters have purpose to receive events from remote processes and pass them to appropriate event handler for further processing.
+	
+	Output adapters have purpose to receive events from event handler and pass them elsewhere for further processing.
+	
+IO Adapter definitions
+
+    For IO Adapter definitions in a flow descriptor see {{{./io-adapter-definition.html} How to define IO Adapter}}	
+
+Creating new IO Adapters
+
+    For IO Adapter creations see {{{./howto-create-ioadapter.html} How to create IO Adapter}}	
+
+	
+
+	
+	

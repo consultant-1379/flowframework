@@ -1,0 +1,93 @@
+    ------
+    Flow Framework - Creating Event Handler
+    ------
+
+Creating Event Handlers
+
+    You can create your own Event Handlers using EventFlow API. The following rules must be followed:
+
+    [[1]] It is recommended to extend the {{{./apidocs/com/ericsson/oss/itpf/common/event/handler/AbstractEventHandler.html} AbstractEventHandler}} class
+    instead of simply implementing {{{./apidocs/com/ericsson/oss/itpf/common/event/handler/EventHandler.html} EventHandler}} interface
+
+    [[2]] AbstractEventHandler contains a EventHandlerContext which defines customized configuration. The configuration
+    attributes can be accessed using getConfiguration() method of AbstractEventHandler.
+
+    [[3]] If your event handler implements the destroy() method, then include a call to super.destroy();
+
+    []
+
+
+    <<Life Cycle of Event Handlers>>
+
+    The component implementing the flow framework must govern the life cycle of Event Handlers and take into consideration the following points
+
+    [[1]] When a flow is created, all associated Event Handlers will be instantiated by flow engine
+
+    [[2]] The Event Handler's <init()> method will be called only once before the <onEvent()> method is invoked. This method is invoked by flow engine and is guaranteed to be invoked only once
+
+    [[3]] The Event Handler's destroy() method will be invoked before the instance is destroyed (during flow undeployment or engine shutdown). This method is invoked by flow engine and is guaranteed to be invoked only once
+
+    [[4]] The Event Handler instance is destroyed when the associated flow is destroyed
+
+    []
+
+    <<Threading and Concurrency of EventHandler>>
+
+    Event Handlers must be written in thread-safe manner. Multiple threads will be invoking onEvent() method of event handler and it is the responsibility of
+    event handler developer to ensure this method is thread-safe.
+    
+    When writing event handlers it is <<NOT>> recommended to <<synchronize>> any of handler methods. This will slow down execution of handlers. Thread safety must be achieved by avoiding to keep any state inside handler.
+
+    <<Example>>
+
++-----+
+/**
+ * The SampleEventHandler extends the AbstractEventHandler class and implements the EventInputHandler interface
+ * in order to process the events received from upstream and send downstream
+ */
+public class SampleEventHandler extends AbstractEventHandler implements EventInputHandler {
+
+    // Customized configuration attribute can be defined if necessary
+    private String sampleAttribute;
+
+    // A name should be provided for the attribute, it is used as the key in configuration
+    private static final String SAMPLE_CONFIG_ATTRIBUTE_NAME = "attributeName";
+
+    // Method inherited from AbstractEventHandler
+    @Override
+    protected void doInit() {
+        // Invoked only once by flow engine during initialization but before any event processing
+
+        // The attribute values can be obtained using getConfiguration method
+        sampleAttribute = getConfiguration().getStringProperty(SAMPLE_CONFIG_ATTRIBUTE_NAME);
+    }
+
+    // Method inherited from AbstractEventHandler
+    @Override
+    public void destroy() {
+        super.destroy();
+
+        // Invoked by flow engine before instance is destroyed (when undeploying flow or shutting down flow engine instance)
+    }
+
+    // Method performing event processing. This method must be thread-safe (but not synchronized)
+    // This method will be invoked many times during event handler lifecycle
+    @Override
+    public void onEvent(final Object event) {
+        // Processing the received event
+        Object newEvent = processingEvent(event);
+        // Sending the processed event downstream to its subscribers
+        sendToAllSubscribers(newEvent);
+        // it is also possible to send events to specific subscribers (by position or identifier)
+    }
+
+	// logic to process event
+	// must be thread-safe
+	// must be as fast as possible
+	// not recommended to be synchronized
+    private Object processingEvent(final Object event) {
+        // Processing the received event, and return the result as a new event
+    }
+
+}
++-----+	

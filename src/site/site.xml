@@ -1,0 +1,48 @@
+<project xmlns="http://maven.apache.org/DECORATION/1.3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
+  <bannerLeft>
+    <name>Flow Framework</name>
+  </bannerLeft>
+  <publishDate position="right"/>
+  
+  <bannerRight>
+    <src>images/logo.png</src>
+  </bannerRight>
+
+  <body>
+    <links>
+    	<item name="Report bugs" href="${jira.url}"/>
+    	<!-- <item name="Latest releases" href="${releases.url}"/> -->
+    	<item name="Nexus" href="${nexusUrl}"/>
+    	<!-- Comment out until issue with Ericsson url being replaced by ./ is resolved -->
+    	<!-- <item name="Ericsson" href="http://www.ericsson.com/"/> -->
+    </links>
+    
+    <menu name="Flow Framework">
+      <item name="Home" href="/index.html"/>
+      <item name="Required dependencies" href="/required_dependencies.html"/>
+      <item name="Glossary" href="/glossary.html"/>
+      <item name="Useful reading" href="/useful-reading.html"/>
+    </menu>
+
+	<menu ref="modules" />
+
+  </body>
+  
+  <skin>
+      <groupId>com.ericsson.cds</groupId>
+      <artifactId>ericsson-skin-stats</artifactId>
+      <version>1.0.1</version>
+  </skin>
+  <custom>
+      <uiStats>
+          <serverUrl>https://cds.ericsson.se/analytics/</serverUrl>
+          <siteId>19</siteId>
+      </uiStats>
+      <fluidoSkin>
+          <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+      </fluidoSkin>
+  </custom>
+</project>
+

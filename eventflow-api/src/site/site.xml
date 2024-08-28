@@ -1,0 +1,57 @@
+<project xmlns="http://maven.apache.org/DECORATION/1.3.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/DECORATION/1.3.0 http://maven.apache.org/xsd/decoration-1.3.0.xsd">
+  <bannerLeft>
+    <name>Flow Framework - EventFlow API</name>
+  </bannerLeft>
+  <publishDate position="right"/>
+  <bannerRight>
+    <src>images/logo.png</src>
+  </bannerRight>
+  
+  <body>
+    <links>
+    	<item name="Report bugs" href="${jira.url}"/>
+    	<!-- <item name="Latest releases" href="${releases.url}"/> -->
+    	<item name="Nexus" href="${nexusUrl}"/>
+    	<!-- Comment out until issue with Ericsson url being replaced by ./ is resolved -->
+    	<!-- <item name="Ericsson" href="http://www.ericsson.com/"/> -->
+    </links>
+    
+    <menu name="EventFlow API">
+      <item name="Flow Framework" href="../index.html"/>
+      <item name="Home" href="/index.html"/>
+      <item name="FAQs" href="/faq.html"/>
+      <item name="Who is using this?" href="/who_is_using.html"/>
+      <item name="JavaDocs" href="/apidocs/index.html"/>
+    </menu>
+    <menu name="Key Components">
+    		<item name="Flow Descriptor" href="/flow-descriptor.html"/>
+    		<item name="IO Adapters" href="/flow-io-adapters.html"/>
+    		<item name="Event handlers" href="/flow-event-handlers.html"/>
+    		<item name="Control Events" href="/flow-control-events.html"/>
+    </menu>
+    <menu name="How to..">
+    		<item name="How to write flow" href="/howto-create-flow.html"/>
+    		<item name="How to write adapters" href="/howto-create-ioadapter.html"/>
+    		<item name="How to write handler" href="/howto-create-eventhandler.html"/>
+    		<item name="How to handle flow transactions" href="/howto-handle-flowtransaction.html"/>
+    </menu>
+  </body>
+  
+  <skin>
+    <groupId>com.ericsson.cds</groupId>
+    <artifactId>ericsson-skin-stats</artifactId>
+    <version>1.0.1</version>
+  </skin>
+  <custom>
+    <uiStats>
+        <serverUrl>https://cds.ericsson.se/analytics/</serverUrl>
+        <siteId>19</siteId>
+    </uiStats>
+    <fluidoSkin>
+        <sourceLineNumbersEnabled>true</sourceLineNumbersEnabled>
+    </fluidoSkin>
+  </custom>
+</project>
+

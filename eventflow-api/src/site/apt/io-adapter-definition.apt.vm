@@ -1,0 +1,98 @@
+    IO adapters are uniquely identified by protocol they are able to understand (for example <<jms:/>>, <<tcp:/>>, <<hazelcast:/>>, <<hornetq:/>>).
+	It is the responsibility of IO adapter developers to come up with unique and descriptive protocol that is recognized by their IO adapter implementation.
+	
+How to define an IO Adapter in a flow
+
+	<<Step 1>> Declare a input adapter under <<input>> node or output adapter under <<output>> node by providing a adapter name inside flow descriptor. 
+	The <<uri>> attribute should be defined with a value which indicates the specific implementation of the IO adapter. For available uri values, see built-in IO adapters below.
+	Other adapter attributes can also be defined along with their values if necessary.
+	
+	<<NOTE:>> The input adapter name must be unique within the scope of the entire flow engine instance, which means even two different flow descriptors should not define input adapters with the same name.
+	Also, it must be matched with URI value in step 2. The same for output adapter name.
+	
++-------------------------------+
+<!-- Input Adapter Declaration -->
+<input name="[INPUT_ADAPTER_NAME]">
+	<attribute name="uri" value="[URI_PROTOCOL]" />
+	<attribute name="[ATTRIBUTE_NAME]" value="[ATTRIBUTE_VALUE]" />
+	...
+</input>
+
+<!-- Output Adapter Declaration -->
+<output name="[OUTPUT_ADAPTER_NAME]">
+	<attribute name="uri" value="[URI_PROTOCOL]" />
+	<attribute name="[ATTRIBUTE_NAME]" value="[ATTRIBUTE_VALUE]" />
+	...
+</output>
++-------------------------------+
+	
+	<<Step 2>> Use it inside path. The URI value shall be the same as the handler name defined in step 1.
+	
+	Input adapter is always the entry point of a event flow, whereas output adapter is normally the end point. So, declare input adapter under <<from>> node 
+	and output adapter under <<to>> node inside <<path>>.
+	
++-------------------------------+	
+<path>
+	<from uri="[INPUT_ADAPTER_NAME]" />
+	...
+	<to uri="[OUTPUT_ADAPTER_NAME]" />
+</path>
++-------------------------------+	
+	
+	<<Example>> 
+	
+	Steps to build JMS IO Adapter are described {{{${documentation_EventProcessingService}/io-adapters-jms.html}here}}
+	
+	<<Using JMS IO Adapters in flow descriptor>>
+	
++-------------------------------+
+<input name="jmsInput">
+	<attribute name="uri" value="jms:/" />
+	<attribute name="jndiJmsConnectionFactory" value="/EpsTestConnectionFactory" />
+	<attribute name="jmsDestinationType" value="Queue" />
+	<attribute name="jmsDestinationName" value="InTestQueue" />
+</input>
+
+<output name="jmsOutput">
+	<attribute name="uri" value="jms:/" />
+	<attribute name="jndiJmsConnectionFactory" value="/EpsTestConnectionFactory" />
+	<attribute name="jmsDestinationType" value="Queue" />
+	<attribute name="jmsDestinationName" value="OutTestQueue" />
+</output>
+
+<path>
+	<from uri="jmsInput" />
+	<to uri="eventHandler">
+	<to uri="jmsOutput" />
+</path>
++-------------------------------+
+
+Alternative way of using IO Adapters
+
+	Alternatively, this is another way to declare and use IO adapters directly inside <<path>> node. It is useful when you are using
+	a simple IO adapter with no or very few attribute. The format is as below:
+	
++-------------------------------+
+<!-- Input Adapter -->
+<path>
+	<from uri="[URI_PROTOCOL][ATTRIBUTE1_NAME]=[ATTRIBUTE1_VALUE]&[ATTRIBUTE2_NAME]=[ATTRIBUTE2_VALUE]" />
+	...
+</path>
+
+<!-- Output Adapter -->
+<path>
+	...
+	<to uri="[URI_PROTOCOL][ATTRIBUTE1_NAME]=[ATTRIBUTE1_VALUE]&[ATTRIBUTE2_NAME]=[ATTRIBUTE2_VALUE]" />
+	...
+</path>
++-------------------------------+
+
+    EPS is an example flow engine which supports this format.
+    
+    For example:
+	
++-------------------------------+
+<from uri="local:/channelId=testChannel" />
+or
+<to uri="null:/" />
++-------------------------------+

@@ -1,0 +1,26 @@
+	------
+	Flow Framework - EventFlow API
+	------
+	
+Flow Framework - EventFlow API
+
+* What is EventFlow API?
+	
+	EventFlow API is a common module providing Java artifacts needed to build event processing components.
+	
+	This is generic Java API that does not depend on any 3PP and provides a way to easily create event handlers that can be wired together 
+	and exchange events. 
+	
+	How these components are wired together is described using modeled {{{./flow-descriptor.html}flow descriptor}}.
+	
+	How to send and receive events from remote processes is described in {{{./flow-io-adapters.html}io adapters}}.
+	
+	How to send and receive events from io adapters is described in {{{./flow-event-handlers.html}event handlers}}.
+	
+* Why use EventFlow API?
+
+	By using same Java API components can be easily reused and deployed in different environments. For example, if enrichment components is built
+	by using EventFlow API and both mediation and services understand this API it is possible to deploy this enrichment component in mediation or
+	closer to services.
+	
+	This way it is possible to do as much processing as possible close to source of data.

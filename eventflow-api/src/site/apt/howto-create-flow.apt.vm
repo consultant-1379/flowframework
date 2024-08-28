@@ -1,0 +1,26 @@
+	------
+	Flow Framework - How to start writing a flow
+	------
+
+    Flow refers to a configuration for a flow of events through specified event-processing Handlers. 
+
+	Many handlers will be implemented in Java, but handlers can also have Rules defined which allows the event-processing logic to be expressed in other languages (eg. CEP, scripting, business rules languages, etc). 
+
+	Events enter a flow via an Input Adapter and leave via an Output Adapter.
+	
+Details
+
+    
+    * {{{./flow-descriptor-basic.html} Basic Module Definition}}.
+	
+	* {{{./io-adapter-definition.html} IO Adapter Definition}}.
+	
+	* {{{./flow-descriptor-handler-definition.html} Event Handler Definition}}.
+
+	* {{{./flow-descriptor-path-definition.html} Flow Path Definition}}.
+	
+	
+	Please find more {{{./flow-descriptor-examples.html}flow descriptor examples}}.
+	
+	
+    For more details {{{./flow-descriptor.html} Flow Descriptor Info}}

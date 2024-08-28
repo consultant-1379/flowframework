@@ -1,0 +1,84 @@
+	------
+	Flow Descriptor - Flow Path Definition
+	------
+
+Flow Path Definition
+
+	The <<path>> node defines how event processing components are connected to each other
+	 (who sends event to whom).
+	Input adapter is the input to the event flow, whereas output adapter is the output from
+	 the flow.
+	The first <<path>> component can be an Input Adapter or any handler, likewise the last <<path>>
+	 component can be an Output Adapter or any handler.
+
+	So, the <<path>> node could be defined as:
+	
+	* an input adapter or event handler under <<from>> node,
+
+	* followed by some event handlers defined under <<to>> node,
+
+	* finishing with an output adapter or event handler under <<to>> node.
+
+ Also, those components can be connected either in series or in parallel.
+	When used in multi <path> flows can point to any event handler defined in the current classpath.
+	
+	It is possible to have multiple paths inside same flow descriptor.
+
+* Define path in series:
+
++-------------------------------+
+<path>
+	<!-- inputComponent, handler1, handler2 and outputComponent 
+	     are connected in series -->
+	<from uri="inputComponent" />
+	<to uri="handler1" />
+	<to uri="handler2" />
+	<to uri="outputComponent" />
+</path>
++-------------------------------+
+	
+* Define path in parallel:
+	
+	You can use <<toMany>> tag if you need to define paths in parallel. It must be defined inside the
+	 <<path>> node. Only one <<toMany>> node can be defined inside <<path>> node, and it must be the
+	 last node of the path.
+
+	Inside a <<toMany>> node, you can define several <<to>> nodes which work in parallel.
+	(Nesting of <<toMany>> node is not supported, you cannot define a <<toMany>> node inside another one).
+	
+	In this case, events are sent from handler0 downstream to handlerA1, handlerB1 and handlerC1 at the same time. Then, 
+	events are sent through each sub-path respectively. (e.g. handlerA1 -> handlerA2 -> outputComponentA)
+	
++-------------------------------+	
+<path>
+	<from uri="inputComponent" />
+	<to uri="handler0" />
+
+	<!-- handlerA1, handlerB1 and handlerC1 are connected 
+	     to handler0 in parallel -->
+	<toMany>
+		<to uri="handlerA1" />
+		<to uri="handlerB1" />
+		<to uri="handlerC1" />
+	</toMany>
+</path>
+
+<path>
+	<from uri="handlerA1" />
+	<to uri="handlerA2" />
+	<to uri="outputComponentA" />
+</path>
+
+<path>
+	<from uri="handlerB1" />
+	<to uri="handlerB2" />
+	<to uri="handlerB3" />
+	<to uri="outputComponentB" />
+</path>
+
+<path>
+	<from uri="handlerC1" />
+	<to uri="outputComponentC" />
+</path>
++-------------------------------+
+	

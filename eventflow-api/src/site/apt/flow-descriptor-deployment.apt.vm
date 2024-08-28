@@ -1,0 +1,18 @@
+
+Flow descriptors deployment
+
+	In both <<JSE>> and <<JEE>> environments:
+
+	Flow descriptors should be deployed on file system. The location to deploy the flow descriptors is specific to the flow engine implementation.
+	Flow engines constantly watches directory on the file system and whenever new <.xml> file is detected Flow engine will try to deploy it as flow descriptor.
+	Location watched by Flow engine should be  configurable. 
+
+Resources deployment
+
+	In both <<JSE>> and <<JEE>> environments:
+
+	Resources (e.g. configuration files) referenced by flow descriptors can be deployed as either classpath resources or file resources. 
+	
+	<<Classpath resources>> - resource files are deployed in the classpath. It can be built inside the Flow engine  extensions (Adapters, Handlers) and deployed along with the extensions.
+	
+	<<File resources>> - resource files are deployed on file system.

@@ -1,0 +1,19 @@
+    ------
+	Flow Framework - Event Handlers
+	------
+	
+What is Event Handler
+
+    An Event Handler receive events from the input adapters, processess these, and may (optionally) create new events and send the output downstream 
+    (regardless if it is the next handler in the flow or output adapter). Event handlers are connected to each other using flow xml descriptor.
+    
+    Handlers must be agnostic to source of data and existence of other handlers within the same flow. They must be implemented in a language (Eg:- Java, 
+    Jython or EPL (declarative Esper language)) supported by the implementing flow engine.
+         
+Event Handler definitions
+
+    For Event Handler definitions in a flow descriptor see {{{./flow-descriptor-handler-definition.html} How to define Event Handler in a flow descriptor}}	
+
+Creating new Event Handler
+
+    For Event Handler creations see {{{./howto-create-eventhandler.html} How to create Event Handler}}	

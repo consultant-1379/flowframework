@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FlowDefinition xmlns:oc="urn:com:ericsson:schema:xml:oss:oss_common"
+	xmlns="urn:com:ericsson:schema:xml:oss:fbp_flow" oc:ns="com.ericsson.oss.services"
+	oc:name="tests" oc:version="1.0.0">
+
+	<oc:modelCreationInfo author="edeclyd"
+		creationDate="25/04/2016">
+		<oc:designedModel componentId="avroParserEps" />
+	</oc:modelCreationInfo>
+
+	<oc:desc>Provides the mediation from the raw records bus to the decoded
+		records bus
+	</oc:desc>
+
+	<input name="RawInputAdapter">
+		<attribute name="uri" value="generic:/" />
+		<sources>
+			<source uri="kafka://topic1?fomat=avro">
+				<property name="bootstrap.servers" value="${kafkaBrokers}" />
+				<property name="acks" value="all" />
+				<property name="retries" value="0" />
+				<property name="batch.size" value="16384" />
+				<property name="linger.ms" value="1" />
+				<property name="buffer.memory" value="33554432" />
+				<property name="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+				<property name="value.deserializer"	value="com.ericsson.component.aia.common.avro.kafka.encoder.KafkaGenericRecordEncoder" />
+			</source>
+			<source uri="kafka://topic2?fomat=avro">
+				<property name="bootstrap.servers" value="${kafkaBrokers}" />
+				<property name="acks" value="all" />
+				<property name="retries" value="0" />
+				<property name="batch.size" value="16384" />
+				<property name="linger.ms" value="1" />
+				<property name="buffer.memory" value="33554432" />
+				<property name="key.deserializer" value="org.apache.kafka.common.serialization.StringDeserializer" />
+				<property name="value.deserializer"	value="com.ericsson.component.aia.common.avro.kafka.encoder.KafkaGenericRecordEncoder" />
+			</source>
+		</sources>
+	</input>
+
+	<output name="AvroOutputAdapter">
+		<attribute name="uri" value="dataroute:/" />
+		<sinks>
+			<sink uri="kafka://topic?fomat=avro">
+
+				<property name="bootstrap.servers" value="${kafkaBrokers}" />
+				<property name="acks" value="all" />
+				<property name="retries" value="0" />
+				<property name="batch.size" value="16384" />
+				<property name="linger.ms" value="1" />
+				<property name="buffer.memory" value="33554432" />
+				<property name="key.serializer"	value="org.apache.kafka.common.serialization.StringSerializer" />
+				<property name="value.serializer" value="com.ericsson.component.aia.common.avro.kafka.encoder.KafkaGenericRecordEncoder" />
+				<property name="auto.create.topics.enable" value="true" />
+				<filter>
+					<records>
+						<record>
+							<by-regex attribute="a">a.*</by-regex>    <!-- Checks attribute "a" from the record matches starts with a letter "a" -->
+							<by-regex attribute="b">bbbbb</by-regex>  <!-- Checks attribute "b" from the record is "bbbbb" exactly -->
+						</record>
+						<record>
+							<by-name>aRecord</by-name> 	 	<!-- Checks the name of the record is "aRecord" exactly -->
+							<by-schema>aSchema</by-schema>  <!-- Checks the schema of the record is "aSchema" exactly -->
+						</record>
+						<record>
+							<by-name>[a.* | b...]</by-name>   <!-- Checks the name of the record either starts with an "a" or is b followed  by 3 chars -->
+							<by-schema>a.*</by-schema> 		  <!-- Checks the schema of the record starts with a letter "a" -->
+						</record>
+						<record>
+							<by-function>a + b == c</by-function>  <!-- Checks that the sum of the attributes "a" and "b" from the record equal the value of "c" from the record -->
+						</record>
+					</records>
+				</filter>
+				<data-routing>
+					<partition-strategy>
+						<by-function> (a + b +c) % 3 </by-function>
+					</partition-strategy>
+				</data-routing>
+			</sink>
+
+			<sink uri="kafka://topic2?fomat=avro">
+
+				<property name="acks" value="all" />
+
+				<filter>
+					<records>
+						<record>
+							<by-regex attribute="a">a.*</by-regex>    <!-- Checks attribute "a" from the record matches starts with a letter "a" -->
+							<by-regex attribute="b">bbbbb</by-regex>  <!-- Checks attribute "b" from the record is "bbbbb" exactly -->
+						</record>
+					</records>
+				</filter>
+
+				<data-routing>
+					<partition-strategy>
+						<round-robin />
+					</partition-strategy>
+				</data-routing>
+			</sink>
+
+		</sinks>
+	</output>
+
+	<step name="BatchSplitter">
+		<handler>
+			<className>com.ericsson.component.aia.services.exteps.io.adapter.util.RawBytesConverter
+			</className>
+		</handler>
+	</step>
+
+	<step name="recordsHeaderCacheHandler">
+		<handler>
+			<className>com.ericsson.component.aia.services.exteps.eh.header.cache.recordsHeaderCacheHandler
+			</className>
+		</handler>
+		<attribute name="cacheName" value="recordsHeaderCache" />
+		<attribute name="cacheMode" value="DISTRIBUTED_ASYNC" />
+		<attribute name="cacheReplicas" value="2" />
+		<attribute name="timeToLive" value="-1" />
+		<attribute name="maxEntries" value="100000" />
+	</step>
+
+	<step name="PMStreamParser">
+		<handler>
+			<className>com.ericsson.component.aia.services.exteps.eh.parser.PmRecordStreamParser
+			</className>
+		</handler>
+		<attribute name="schematype" value="celltrace" />
+		<attribute name="subnetwork" value="subnetwork" />
+		<attribute name="utcoffset" value="+00.00" />
+		<attribute name="decodedrecordsType" value="generic_record" />
+	</step>
+
+	<!-- <step name="recordsToBytes"> <handler> <className>com.ericsson.oss.services.exteps.esn.mediation.recordsToBytesConverter</className> 
+		</handler> </step> -->
+	<path>
+		<from uri="RawInputAdapter" />
+		<to uri="BatchSplitter" />
+		<to uri="recordsHeaderCacheHandler" />
+		<to uri="PMStreamParser" />
+		<to uri="AvroOutputAdapter" />
+	</path>
+
+</FlowDefinition>
+

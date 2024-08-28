@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<faqs id="FAQ" title="Flow Framework - EventFlow API - FAQs">
+  <part id="General">
+	<title>Flows</title>
+	  <faq id="multiPathElements">
+      <question>Can I have multiple &lt;path&gt; elements inside the same flow xml file?</question>
+      <answer>
+        <p>
+			Yes. See example <a href="./flow-descriptor-examples.html#Event_flow_with_multiple_paths_in_parallel">here</a>.
+        </p>
+      </answer>
+    </faq>
+    <faq id="howToSplitEvents">
+      <question>How do I split events to go from one event handler into multiple paths?</question>
+      <answer>
+        <p>
+			Simply attach multiple input adapters to the same output adapter. This can be done by providing separate flow xml files or within the same flow xml file
+			by using multiple &lt;path&gt; elements. 
+			See example <a href="./flow-descriptor-examples.html#Event_flow_with_multiple_paths_in_parallel">here</a>.
+        </p>
+      </answer>
+    </faq>
+  </part>
+  <part id="Event_Handlers">
+	<title>Event Handlers</title>
+    <faq id="howToChooseHandler">
+      <question>How do I choose what language to use to write event handlers?</question>
+      <answer>
+        <p>
+        	This depends on use case. In case when you need imperative programming language then Java might be better choice.
+        </p>
+	  </answer>
+    </faq>
+    <faq id="accessDB">
+      <question>Can I access database from my event handler implementations?</question>
+      <answer>
+        <p>
+			Yes. Event handlers do not restrict use of Java language. Be careful, accessing external systems (caches, databases, remote interfaces)
+         	from processing components will most likely have big performance impact on your system.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+
+  <part id="Events">
+	<title>Events</title>
+    <faq id="controlEvents">
+      <question>What are control events?</question>
+      <answer>
+        <p>
+        	Control events are used to notify <a href="./flow-event-handlers.html">event handlers</a> inside event flows about some changes.
+			Flow framework intentionally separates data plane from control plane. Data plane is supposed to be dealing with high throughput
+			of events and control plane is there to reconfigure event handlers and how they process data plane events.
+        </p>
+      </answer>
+    </faq>
+  </part>
+
+  <part id="IO">
+	<title>IO</title>
+    <faq id="outputAdapterAsLastComponent">
+      <question>Do I have to have output adapter as the last component in my flow?</question>
+      <answer>
+        <p>
+        	No. But in most cases you would want one of the components in your flow (usually last one) to do something with processed (correlated, enriched) events.
+        </p>
+      </answer>
+    </faq>
+    <faq id="multipleIOSameFlow">
+      <question>Can I have multiple input/output adapters in the same flow?</question>
+      <answer>
+        <p>       
+            Yes, it is possible to have arbitrary number of input and output adapters.
+        </p>
+      </answer>
+    </faq>
+  </part>
+</faqs>

@@ -1,0 +1,60 @@
+    ------
+	Flow Framework - How to handle flow transaction
+    ------
+    
+Flow Transaction
+
+    Flow Framework model provides the transaction attribute for a flow path. The transaction attribute can be used in a flow descriptor only if 
+    flow engine supports it. Mediation Service is an example for flow engine which supports transaction. A path can be made transactional 
+    by adding the transaction attribute to the <path> element.
+           
+    <<NOTE:>>  By default, when transaction attribute is not provided there is no transactional support.
+Example
+ 
+    An example to specify the transaction attribute in the flow path tag. 
+        
++-------------------------------+
+<flow:path transaction="REQUIRED">
+	<!-- inputComponent, handler1, handler2 and outputComponent 
+	     are connected in series -->
+	<flow:from uri="direct:someInput" />
+    <flow:to uri="someStep" />  
+</flow:path>
+
++-------------------------------+
+
+    An example code snippet to use transactions in a flow which is not part of an XA transaction. 
+    It should be done only when flow engine does not support transactions for flows. This example is jboss specific.
+    If handlers are deployed as JBoss modules, you have to lookup the transaction manager from JNDI.
+    If handlers are EJB/CDI components, then you can use CDI injection to inject transaction manager. 
+
++-------------------------------+
+    private TransactionManager findTransactionManager() {
+        TransactionManager result = null;
+        try {
+            final InitialContext ctx = new InitialContext();
+            result = (TransactionManager) ctx.lookup("java:jboss/TransactionManager");
+        } catch (final NamingException e) {
+            log.error("Exception caught when looking up the transaction manager, stack trace: {}", e);
+        }
+        return result;
+    }
+
+Then you can use the transaction manager to start a transaction.
+
+    try {
+        if (txManager.getTransaction() == null) {
+            txManager.begin();
+            //do work
+            txManager.commit();
+        }
+    } catch (NotSupportedException | SystemException e) {
+        log.error("Error occurred while attempting to start a transaction {} ", e);
+    }
++-------------------------------+
+
+
+            
+
+        
+        

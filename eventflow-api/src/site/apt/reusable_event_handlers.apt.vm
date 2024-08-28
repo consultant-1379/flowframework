@@ -1,0 +1,11 @@
+	------
+	Flow Framework - Reusable event handlers
+	------
+	
+Existing reusable event handlers
+
+	Following components contribute reusable event handlers
+
+	[[1]]  {{{${documentation_EPS}/ext-builtin-components.html}Event Processing Service}}
+	
+	[]

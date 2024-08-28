@@ -1,0 +1,64 @@
+	------
+	Flow Framework - Event Handler Definition
+	------
+	
+
+How to define an Event Handler in a flow
+
+	<<Step 1>> Declare a handler under <<step>> node in flow descriptor. Handler declaration starts with the <handler> element. There are two ways to describe the 
+	handler. Either provide a fully qualified classname of Java class implementing the handler using <className> element or provide a name using <named> 
+	element. When <named> is used, the flow engine must recognise the configured value. Refer the examples below.
+	
+	<<NOTE:>> The name assigned to each step must not contain dot character.
+	
++-------------------------------+	
+<!-- This is a Native Java Event Handler. The name must not contain dot character -->
+<step name="batch">
+	<handler>
+		<className>com.ericsson.oss.services.eps.builtin.components.BatchComponent</className>
+	</handler>
+	<attribute name="maxBatchSize" value="10000" />
+</step>
+
+<!-- This is a CDI Event Handler -->
+<step name="cdiHandler">
+	<handler>
+		<named>cdiEventHandler</named>
+	</handler>
+</step>
+
++-------------------------------+
+
+	<<Step 2>> Use it inside path. Handler names are defined under <<to>> node inside <<path>>. The URI value shall be the same as the handler name defined in step 1. 
+	
++-------------------------------+	
+<path>
+	<from uri="[INPUT_ADAPTER_NAME]" />
+	...
+	<to uri="[HANDLER_NAME]" />
+</path>
++-------------------------------+	
+
+    Additional information could be declared as well depending on which kind of event handler you are using. (e.g. the rule should be defined if using an Esper event handler).
+    This is an example specific to Event Processing Service flow engine.
+
++-------------------------------+	
+<!-- This is a Esper Event Handler -->
+<step name="s1Filter">
+	<handler>
+		<named>EsperHandler</named>
+	</handler>
+	<attribute name="configurationFilePath" value="file:/opt/ericsson/ECDS/esper-config/ecds-esper-configuration.xml" />
+	<attribute name="esperInstanceName" value="esperEngine1" />
+	<rule name="s1IncomingEvents">
+		<inputPort name="inputStream1" />	
+		<outputPort name="S1_HANDOVER_OUTGOING" />	
+		<outputPort name="S1_HANDOVER_INCOMING" />
+		<ruleResource uri="classpath:/ecds-epl/LTE_EUTRAN_MOBILITY_S1HO_CORRELATION.epl" />		
+	</rule>
+</step>
++-------------------------------+
+
+    Refer {{{${documentation_EventProcessingService}/ext-event-handlers.html}here}} for more details on EPS Event Handler
+
+    Refer {{{${documentation_Mediation}/how-to-create-an-event-handler.html}here}} for more details on Mediation Service Event Handler

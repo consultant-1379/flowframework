@@ -1,0 +1,62 @@
+	------
+	Flow Framework - Flow Descriptor
+	------
+
+What is Flow Descriptor
+
+	Flow descriptor is an XML document that is the central interface for using Flow Engine. It describes an event flow and is used by the flow engine to determine:
+
+	[[1]] Which components should perform event processing (what rules, what event handlers, and their configuration etc)
+
+	[[2]] How event processing components are connected to each other (who sends event to whom)
+
+	[[3]] Where input events are coming from and where output events are going to (what IO adapters should be used)
+
+
+	Flow descriptor allows you to choose different event handlers to be used by different processing steps.
+
+
+	Also, take a look at {{{./flow-descriptor-examples.html}flow descriptor examples}}.
+
+
+Quick Overview
+
+	Flow refers to a configuration for a flow of events through specified event-processing Handlers. 
+
+	Many handlers will be implemented in Java, but handlers can also have Rules defined which allows the event-processing logic to be expressed in other languages (eg. CEP, scripting, business rules languages, etc). 
+
+	Events enter a flow via an Input Adapter and leave via an Output Adapter.
+
+
+ *Flows may be simple
+
+[./images/simple-flow.png]
+
+ *Flows may be complex, perhaps having multiple input adapters, multiple paths through the flow, complex handlers, multiple output adapters.
+
+[./images/complex-flow.png]
+
+ *Flows may connected together to form larger flows
+
+[./images/multi-flow.png]
+
+Details
+
+	* {{{./flow-descriptor-basic.html} Basic Module Info}}.
+	
+	* {{{./io-adapter-definition.html} IO Adapter Info}}.
+	
+	* {{{./flow-descriptor-handler-definition.html} Event Handler Definition}}.
+
+	* {{{./flow-descriptor-path-definition.html} Flow Path Definition}}.
+	
+Others
+
+    * {{{./flow-configurationtemplate-definition.html} Configuration Template Definition}}.
+    
+    * {{{./flow-clonedstep-definition.html} Cloned Step Definition}}.
+
+Deploying Flow Descriptors
+
+	Flow Descriptors are deployed as a kind of Flow engine extensions as described {{{./flow-descriptor-deployment.html}here}}.
+
